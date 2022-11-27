@@ -1,6 +1,8 @@
 #ifndef DEFS_H
 #define DEFS_H
 
+// BOARD
+
 typedef unsigned long long U64;
 
 #define NAME "Vice 1.0"
@@ -58,5 +60,24 @@ typedef struct {
     int minorPieceNum[3];
     int majorPieceNum[3];
 } S_BOARD;
+
+// MACROS
+
+#define FR2SQ(f, r) ( ( (f) + 21 ) + ( (r) * 10 ) )
+
+// GLOBALS
+/* Pieces are located on a 120 int array board but pawns on a 64b int (each b is a square).
+    We need a way to convert those in both ways.
+*/
+int Sq120ToSq64[BRD_SQ_NUM];
+int Sq64ToSq120[64];
+
+
+// FUNCTIONS
+
+
+// INIT
+void allInit();
+void debugInit();
 
 #endif

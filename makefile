@@ -1,7 +1,12 @@
-EXECUTABLE = vice
+CC=gcc
+EXECUTABLE=vice
+FLAGS=-g -Wall
 
 all:
-	gcc vice.c -o vice
+	${CC} ${FLAGS} vice.c init.c -o vice
+
+run:
+	./${EXECUTABLE}
 
 clean:
 	rm ${EXECUTABLE}
