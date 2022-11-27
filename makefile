@@ -3,7 +3,7 @@ EXECUTABLE=vice
 FLAGS=-g -Wall
 
 all:
-	${CC} ${FLAGS} vice.c init.c -o vice
+	${CC} ${FLAGS} vice.c init.c bitboards.c -o vice
 
 run:
 	./${EXECUTABLE}

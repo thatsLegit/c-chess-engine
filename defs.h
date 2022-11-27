@@ -1,3 +1,6 @@
+
+#include <stdlib.h>
+
 #ifndef DEFS_H
 #define DEFS_H
 
@@ -44,6 +47,12 @@ typedef struct {
     U64 pawns[3]; /* 64b => 8B: each B is a row, each b 1 if pawn of given color, 0 otherwise */
     int kingSq[2]; /* each king side's position */
 
+    // moving pieces optimization (instead of using int pieces[BRD_SQ_NUM]): 
+    // 13: we have 13 different pieces on the board
+    // 10: we can have no more than 10 of each piece
+    // ex: to move one of the white knights, you would need to pieceList[wN][0/1?] = C4?
+    int pieceList[13][10];
+
     int side; /* current side to move */
     int enPas; /* active en passant square if there is any */
     int fiftyMove; /* boolean ? */
@@ -62,8 +71,10 @@ typedef struct {
 } S_BOARD;
 
 // MACROS
-
+// 120 based index
 #define FR2SQ(f, r) ( ( (f) + 21 ) + ( (r) * 10 ) )
+#define SQ64(sq120) Sq120ToSq64[sq120]
+#define SQ120(sq64) Sq64ToSq120[sq64]
 
 // GLOBALS
 /* Pieces are located on a 120 int array board but pawns on a 64b int (each b is a square).
@@ -74,7 +85,8 @@ int Sq64ToSq120[64];
 
 
 // FUNCTIONS
-
+void printBitBoard(U64 bb);
+void bitBoardExample();
 
 // INIT
 void allInit();
