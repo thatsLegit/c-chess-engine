@@ -14,6 +14,14 @@ enum { RANK_1, RANK_2, RANK_3, RANK_4, RANK_5, RANK_6, RANK_7, RANK_8, RANK_NONE
 
 enum { BLACK, WHITE, BOTH };
 
+typedef struct {
+    int move;
+    int castlePerm;
+    int enPas;
+    int fiftyMove;
+    U64 posKey;
+} MOVE_CMD;
+
 enum {
     /* 0 -> 20 OOR */
     A1 = 21, B1, C1, D1, E1, F1, G1, H1, /* 29, 3O OOR */
@@ -36,7 +44,7 @@ typedef struct {
 
     int side; /* current side to move */
     int enPas; /* active en passant square if there is any */
-    int fiftyMoves; /* boolean ? */
+    int fiftyMove; /* boolean ? */
 
     int castlePerm;
 
