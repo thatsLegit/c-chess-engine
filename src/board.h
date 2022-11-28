@@ -1,4 +1,3 @@
-
 #include <stdlib.h>
 
 #ifndef DEFS_H
@@ -70,26 +69,15 @@ typedef struct {
     int majorPieceNum[3];
 } S_BOARD;
 
-// MACROS
 // 120 based index
 #define FR2SQ(f, r) ( ( (f) + 21 ) + ( (r) * 10 ) )
 #define SQ64(sq120) Sq120ToSq64[sq120]
 #define SQ120(sq64) Sq64ToSq120[sq64]
 
-// GLOBALS
 /* Pieces are located on a 120 int array board but pawns on a 64b int (each b is a square).
     We need a way to convert those in both ways.
 */
 int Sq120ToSq64[BRD_SQ_NUM];
 int Sq64ToSq120[64];
-
-
-// FUNCTIONS
-void printBitBoard(U64 bb);
-void bitBoardExample();
-
-// INIT
-void allInit();
-void debugInit();
 
 #endif

@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include "defs.h"
+#include "board.h"
 
 void initSq120To64()
 {
