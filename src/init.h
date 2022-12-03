@@ -3,6 +3,6 @@
 
 void allInit();
 void debugInit();
-
+void initBitMasks();
 
 #endif

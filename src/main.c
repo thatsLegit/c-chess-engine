@@ -8,7 +8,5 @@ int main()
 {
     allInit();
 
-    bitBoardExample();
-
     return 0;
 }

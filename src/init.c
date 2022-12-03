@@ -1,8 +1,23 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "board.h"
+#include "bitboards.h"
 
-void initSq120To64()
+void initBitMasks()
+{
+    for (int i = 0; i < 64; i++)
+    {
+        setMask[i] = 0ULL;
+        clearMask[i] = 0ULL;
+    }
+    for (int i = 0; i < 64; i++)
+    {
+        setMask[i] = (1ULL << i);
+        clearMask[i] = ~setMask[i];
+    }
+}
+
+void initSquares()
 {
     for (int i = 0; i < BRD_SQ_NUM; i++)
     {
@@ -52,7 +67,8 @@ void debugInit()
 
 void allInit()
 {
-    initSq120To64();
+    initSquares();
+    initBitMasks();
 }
 
 /*

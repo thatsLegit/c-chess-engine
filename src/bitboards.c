@@ -3,6 +3,8 @@
 #include "board.h"
 #include "bitboards.h"
 
+// solution from https://www.chessprogramming.org/Looking_for_Magics
+
 const int BitTable[64] = {
     63, 30, 3, 32, 25, 41, 22, 33, 15, 50, 42, 13, 11, 53, 19, 34, 61, 29, 2,
     51, 21, 43, 45, 10, 18, 47, 1, 54, 9, 57, 0, 35, 62, 31, 40, 4, 49, 5, 52,
@@ -26,15 +28,25 @@ int countBits(U64 bb)
     return r;
 }
 
+char files[8] = "ABCDEFGH";
+char ranks[8] = "12345678";
+
 // Currently bitboards are only used for pawns
 void printBitBoard(U64 bb)
 {
+    printf("\n ");
 
     U64 shiftMe = 1ULL;
+
+    for (int i = 0; i < 8; i++)
+    {
+        printf("%3c", files[i]);
+    }
 
     for (int rank = RANK_8; rank >= RANK_1; rank--)
     {
         printf("\n");
+        printf("%c", ranks[rank]);
 
         for (int file = FILE_A; file < FILE_NONE; file++)
         {
@@ -43,11 +55,11 @@ void printBitBoard(U64 bb)
 
             if ((shiftMe << sq64) & bb)
             {
-                printf("%5c", 'X');
+                printf("%3c", 'X');
             }
             else
             {
-                printf("%5c", '-');
+                printf("%3c", '-');
             }
         }
     }
@@ -78,4 +90,12 @@ void bitBoardExample()
     printBitBoard(playBitBoard);
     count = COUNT(playBitBoard);
     printf("count: %d\n", count);
+
+    SET_BIT(playBitBoard, 0);
+    SET_BIT(playBitBoard, 10);
+    SET_BIT(playBitBoard, 61);
+    printBitBoard(playBitBoard);
+
+    CLEAR_BIT(playBitBoard, 61);
+    printBitBoard(playBitBoard);
 }

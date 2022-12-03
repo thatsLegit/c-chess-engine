@@ -27,7 +27,7 @@ typedef struct {
 } MOVE_CMD;
 
 enum {
-    /* 0 -> 20 OOR */
+    /* 0 -> 20 OutOfRange */
     A1 = 21, B1, C1, D1, E1, F1, G1, H1, /* 29, 3O OOR */
     A2 = 31, B2, C2, D2, E2, F2, G2, H2, /* 39, 4O OOR */
     A3 = 41, B3, C3, D3, E3, F3, G3, H3, /* 49, 5O OOR */
@@ -68,16 +68,5 @@ typedef struct {
     int minorPieceNum[3];
     int majorPieceNum[3];
 } S_BOARD;
-
-// 120 based index
-#define FR2SQ(f, r) ( ( (f) + 21 ) + ( (r) * 10 ) )
-#define SQ64(sq120) Sq120ToSq64[sq120]
-#define SQ120(sq64) Sq64ToSq120[sq64]
-
-/* Pieces are located on a 120 int array board but pawns on a 64b int (each b is a square).
-    We need a way to convert those in both ways.
-*/
-int Sq120ToSq64[BRD_SQ_NUM];
-int Sq64ToSq120[64];
 
 #endif
