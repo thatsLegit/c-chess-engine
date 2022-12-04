@@ -1,7 +1,5 @@
-#include <stdlib.h>
-
-#ifndef DEFS_H
-#define DEFS_H
+#ifndef BOARD_H
+#define BOARD_H
 
 // BOARD
 
@@ -12,7 +10,7 @@ typedef unsigned long long U64;
 
 #define MAX_GAME_MOVES 2048
 
-enum { wP, wN, wB, wR, wQ, wK, bP, bN, bB, bR, bQ, bK };
+enum { EMPTY, wP, wN, wB, wR, wQ, wK, bP, bN, bB, bR, bQ, bK };
 enum { FILE_A, FILE_B, FILE_C, FILE_D, FILE_E, FILE_F, FILE_G, FILE_H, FILE_NONE };
 enum { RANK_1, RANK_2, RANK_3, RANK_4, RANK_5, RANK_6, RANK_7, RANK_8, RANK_NONE };
 
@@ -35,7 +33,7 @@ enum {
     A5 = 61, B5, C5, D5, E5, F5, G5, H5, /* 69, 7O OOR */
     A6 = 71, B6, C6, D6, E6, F6, G6, H6, /* 79, 8O OOR */
     A7 = 81, B7, C7, D7, E7, F7, G7, H7, /* 89, 9O OOR */
-    A8 = 91, B8, C8, D8, E8, F8, G8, H8, NO_SQ /* 99 -> 120 OOR */
+    A8 = 91, B8, C8, D8, E8, F8, G8, H8, NO_SQ, OFFBOARD /* 99 -> 120 OOR */
 };
 
 // castling permissions
@@ -46,6 +44,11 @@ typedef struct {
     U64 pawns[3]; /* 64b => 8B: each B is a row, each b 1 if pawn of given color, 0 otherwise */
     int kingSq[2]; /* each king side's position */
 
+    int pieceNum[13];
+    int bigPieceNum[3];
+    int minorPieceNum[3];
+    int majorPieceNum[3];
+
     // moving pieces optimization (instead of using int pieces[BRD_SQ_NUM]): 
     // 13: we have 13 different pieces on the board
     // 10: we can have no more than 10 of each piece
@@ -54,19 +57,19 @@ typedef struct {
 
     int side; /* current side to move */
     int enPas; /* active en passant square if there is any */
-    int fiftyMove; /* boolean ? */
 
-    int castlePerm;
+    // The number of halfmoves since the last capture or pawn advance, used for the fifty-move rule.
+    // The fifty-move rule in chess states that a player can claim a draw if no capture has been made 
+    // and no pawn has been moved in the last fifty moves.
+    int fiftyMove;
+    int castlePerm; /* can still castle ? */
 
-    int ply; /* how many half moves in the current search */
-    int historyPly; /* in the whole game, how many half moves? */
+    int ply; /* how many half moves played in the current search */
+    int historyPly; /* in the whole game, how many half moves played ? */
 
     U64 posKey; /* unique key generated for each position */
+} BOARD;
 
-    int pieceNum[13];
-    int bigPieceNum[3];
-    int minorPieceNum[3];
-    int majorPieceNum[3];
-} S_BOARD;
+void resetBoard(BOARD *pos);
 
 #endif

@@ -2,7 +2,5 @@
 #define INIT_H
 
 void allInit();
-void debugInit();
-void initBitMasks();
 
 #endif

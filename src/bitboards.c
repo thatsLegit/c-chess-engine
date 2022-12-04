@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+
 #include "board.h"
 #include "bitboards.h"
 
