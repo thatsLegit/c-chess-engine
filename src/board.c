@@ -5,6 +5,7 @@
 #include "board.h"
 #include "bitboards.h"
 #include "hashkeys.h"
+#include "data.h"
 
 void resetBoard(BOARD *pos)
 {
@@ -158,7 +159,6 @@ int parseFen(char *fen, BOARD *pos)
     fen += 2;
 
     // castling permissions (KQkq)
-    // don't really understand how this is supposed to reflect the castling permissions
     for (int i = 0; i < 4; i++)
     {
         if (*fen == ' ')
@@ -195,7 +195,7 @@ int parseFen(char *fen, BOARD *pos)
         int rank = *(fen + 1) - '1';
 
         assert(file >= FILE_A && file <= FILE_H);
-        assert(rank <= RANK_1 && rank <= RANK_8);
+        assert(rank >= RANK_1 && rank <= RANK_8);
 
         pos->enPas = FR2SQ(file, rank);
         fen++;
@@ -210,4 +210,38 @@ int parseFen(char *fen, BOARD *pos)
     pos->posKey = generatePosKey(pos);
 
     return 0;
+}
+
+void printBoard(const BOARD *pos)
+{
+    printf("\nGAME BOARD:\n\n");
+
+    for (int rank = RANK_8; rank >= RANK_1; rank--)
+    {
+        printf("%d ", rank + 1);
+
+        for (int file = FILE_A; file <= FILE_H; file++)
+        {
+            int sq = FR2SQ(file, rank);
+            int piece = pos->pieces[sq];
+            printf("%3c", pieceChar[piece]);
+        }
+
+        printf("\n");
+    }
+
+    printf("\n  ");
+    for (int file = FILE_A; file <= FILE_H; file++)
+    {
+        printf("%3c", file + 'a');
+    }
+    printf("\n\n");
+    printf("side: %c\n", sideChar[pos->side]);
+    printf("En passant: %d\n", pos->enPas);
+    printf("Castling permission: %c%c%c%c\n",
+           pos->castlePerm & WKCA ? 'K' : '-',
+           pos->castlePerm & WQCA ? 'Q' : '-',
+           pos->castlePerm & BKCA ? 'k' : '-',
+           pos->castlePerm & WQCA ? 'q' : '-');
+    printf("posKey: %llX\n", pos->posKey);
 }

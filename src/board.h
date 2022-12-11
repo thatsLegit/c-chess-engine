@@ -16,7 +16,7 @@ enum { EMPTY, wP, wN, wB, wR, wQ, wK, bP, bN, bB, bR, bQ, bK };
 enum { FILE_A, FILE_B, FILE_C, FILE_D, FILE_E, FILE_F, FILE_G, FILE_H, FILE_NONE };
 enum { RANK_1, RANK_2, RANK_3, RANK_4, RANK_5, RANK_6, RANK_7, RANK_8, RANK_NONE };
 
-enum { BLACK, WHITE, BOTH };
+enum { WHITE, BLACK, BOTH };
 
 typedef struct {
     int move;
@@ -39,6 +39,7 @@ enum {
 };
 
 // castling permissions
+// reminder: 1 => 1, 2 => 10, 4 => 100, 8 => 1000
 enum { WKCA = 1, WQCA = 2, BKCA = 4, BQCA = 8 };
 
 typedef struct {
@@ -64,7 +65,7 @@ typedef struct {
     // The fifty-move rule in chess states that a player can claim a draw if no capture has been made 
     // and no pawn has been moved in the last fifty moves.
     int fiftyMove;
-    int castlePerm; /* can still castle ? */
+    int castlePerm; /* can still castle ? basically 0001, 0010, 1000 or any combination of these */
 
     int ply; /* how many half moves played in the current search */
     int historyPly; /* in the whole game, how many half moves played ? */
@@ -74,5 +75,6 @@ typedef struct {
 
 void resetBoard(BOARD *pos);
 int parseFen(char *fen, BOARD *pos);
+void printBoard(const BOARD* pos);
 
 #endif
