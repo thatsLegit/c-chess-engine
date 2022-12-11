@@ -8,6 +8,5 @@
 int main()
 {
     allInit();
-
     return 0;
 }
