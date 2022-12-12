@@ -45,6 +45,7 @@ void resetBoard(BOARD *pos)
     pos->posKey = 0ULL;
 }
 
+// Mutates the board according to the given fen notation
 // "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
 // 1st part of the sequence is all the rows separated by /. Letter => piece, number => empty square
 // 2nd part is for the side
@@ -52,7 +53,6 @@ void resetBoard(BOARD *pos)
 // 4th part is - or any square [E3/...] and is for en passant
 // 5th part is for fifty move rule
 // 6th part is for the number of full turns played
-
 int parseFen(char *fen, BOARD *pos)
 {
     assert(fen != NULL);
@@ -209,6 +209,8 @@ int parseFen(char *fen, BOARD *pos)
 
     pos->posKey = generatePosKey(pos);
 
+    updateMaterialLists(pos);
+
     return 0;
 }
 
@@ -244,4 +246,39 @@ void printBoard(const BOARD *pos)
            pos->castlePerm & BKCA ? 'k' : '-',
            pos->castlePerm & WQCA ? 'q' : '-');
     printf("posKey: %llX\n", pos->posKey);
+}
+
+void updateMaterialLists(BOARD *pos)
+{
+    for (int i = 0; i < BRD_SQ_NUM; i++)
+    {
+        int piece = pos->pieces[i];
+        if (pos->pieces[i] == OFFBOARD || pos->pieces[i] == EMPTY)
+            return;
+
+        int color = pieceColor[piece];
+
+        if (pieceBig[piece])
+            pos->bigPieceNum[color] += 1;
+        if (pieceMaj[piece])
+            pos->majorPieceNum[color] += 1;
+        if (pieceMin[piece])
+            pos->minorPieceNum[color] += 1;
+
+        pos->material[color] += pieceValue[piece];
+
+        pos->pieceList[piece][pos->pieceNum[piece]++] = i; /* set the position sq120 */
+
+        if (piece == bK)
+            pos->kingSq[BLACK] = i;
+        if (piece == wK)
+            pos->kingSq[WHITE] = i;
+
+        if (piece == wP)
+            SET_BIT(pos->pawns[WHITE], SQ64(i));
+        if (piece == bP)
+            SET_BIT(pos->pawns[BLACK], SQ64(i));
+        if (piece == bP || piece == wP)
+            SET_BIT(pos->pawns[BOTH], SQ64(i));
+    }
 }

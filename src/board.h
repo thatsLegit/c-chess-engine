@@ -44,13 +44,14 @@ enum { WKCA = 1, WQCA = 2, BKCA = 4, BQCA = 8 };
 
 typedef struct {
     int pieces[BRD_SQ_NUM];
-    U64 pawns[3]; /* 64b => 8B: each B is a row, each b 1 if pawn of given color, 0 otherwise */
+    U64 pawns[2]; /* 64b => 8B: each B is a row, each b 1 if pawn of given color, 0 otherwise */
     int kingSq[2]; /* each king side's position */
 
-    int pieceNum[13];
-    int bigPieceNum[3];
-    int minorPieceNum[3];
-    int majorPieceNum[3];
+    int pieceNum[13]; /* number of elements of each type of piece */
+    int bigPieceNum[2];
+    int minorPieceNum[2];
+    int majorPieceNum[2];
+    int material[2]; /* value of material for black and white */
 
     // moving pieces optimization (instead of using int pieces[BRD_SQ_NUM]): 
     // 13: we have 13 different pieces on the board
@@ -71,10 +72,12 @@ typedef struct {
     int historyPly; /* in the whole game, how many half moves played ? */
 
     U64 posKey; /* unique key generated for each position */
+    MOVE_CMD history[MAX_GAME_MOVES];
 } BOARD;
 
 void resetBoard(BOARD *pos);
 int parseFen(char *fen, BOARD *pos);
 void printBoard(const BOARD* pos);
+void updateMaterialLists(BOARD* pos);
 
 #endif

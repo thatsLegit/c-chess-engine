@@ -8,4 +8,10 @@ extern char sideChar[];
 extern char rankChar[];
 extern char fileChar[];
 
+int pieceBig[13];
+int pieceMaj[13];
+int pieceMin[13];
+int pieceValue[13];
+int pieceColor[13];
+
 #endif
