@@ -40,5 +40,8 @@ clean:
 	${RM} -r ${BINDIR}/* ${OBJDIR}/*;
 	${RM} -r **/*.dSYM;
 
+again:
+	make clean; make; make run
+
 run: 
 	./${EXECUTABLE}
