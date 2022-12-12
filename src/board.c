@@ -7,6 +7,20 @@
 #include "hashkeys.h"
 #include "data.h"
 
+int squareFile(int square, BOARD *pos)
+{
+    if (pos->pieces[square] == OFFBOARD)
+        return OFFBOARD;
+    return (square % 10) - 1;
+}
+
+int squareRank(int square, BOARD *pos)
+{
+    if (pos->pieces[square] == OFFBOARD)
+        return OFFBOARD;
+    return (square / 10) - 2;
+}
+
 void resetBoard(BOARD *pos)
 {
     for (int i = 0; i < BRD_SQ_NUM; i++)

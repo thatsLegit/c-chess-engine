@@ -15,17 +15,21 @@ int main()
 
     BOARD board;
 
-    parseFen(START_FEN, &board);
-    printBoard(&board);
+    resetBoard(&board);
 
-    parseFen(FEN_1, &board);
-    printBoard(&board);
+    // parseFen(START_FEN, &board);
+    // printBoard(&board);
 
-    parseFen(FEN_2, &board);
-    printBoard(&board);
+    // parseFen(FEN_1, &board);
+    // printBoard(&board);
 
-    parseFen(FEN_3, &board);
-    printBoard(&board);
+    // parseFen(FEN_2, &board);
+    // printBoard(&board);
+
+    // parseFen(FEN_3, &board);
+    // printBoard(&board);
+
+    printf("%d\n", squareRank(83, &board));
 
     return 0;
 }
