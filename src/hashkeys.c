@@ -1,7 +1,7 @@
 #include <assert.h>
 
-#include "hashkeys.h"
-#include "board.h"
+#include "typedefs/hashkeys.h"
+#include "typedefs/board.h"
 
 U64 generatePosKey(const BOARD *pos)
 {

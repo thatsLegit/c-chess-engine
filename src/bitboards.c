@@ -1,8 +1,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "board.h"
-#include "bitboards.h"
+#include "typedefs/board.h"
+#include "typedefs/bitboards.h"
 
 // solution from https://www.chessprogramming.org/Looking_for_Magics
 

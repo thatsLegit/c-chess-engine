@@ -1,7 +1,8 @@
 #include <stdlib.h>
 #include <stdbool.h>
-#include "board.h"
-#include "data.h"
+
+#include "typedefs/board.h"
+#include "typedefs/data.h"
 
 char pieceChar[] = ".PNBRQKpnbrqk";
 char sideChar[] = "wb-";

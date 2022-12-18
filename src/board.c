@@ -3,10 +3,10 @@
 #include <stdbool.h>
 #include <assert.h>
 
-#include "board.h"
-#include "bitboards.h"
-#include "hashkeys.h"
-#include "data.h"
+#include "typedefs/board.h"
+#include "typedefs/bitboards.h"
+#include "typedefs/hashkeys.h"
+#include "typedefs/data.h"
 
 int squareFile(int square, const BOARD *pos)
 {

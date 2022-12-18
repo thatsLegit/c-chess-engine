@@ -1,9 +1,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "board.h"
-#include "bitboards.h"
-#include "hashkeys.h"
+#include "typedefs/board.h"
+#include "typedefs/bitboards.h"
+#include "typedefs/hashkeys.h"
 
 /*
     120 To 64

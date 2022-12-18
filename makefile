@@ -3,6 +3,8 @@ CC=gcc
 # general set of flags
 FLAGS=-g -Wall
 
+HEADERSDIR=typedefs
+
 SRCDIR=src
 SRCS := $(wildcard ${SRCDIR}/*.c)
 SRCS := $(filter-out src/main.c, $(SRCS))
@@ -24,7 +26,8 @@ ${EXECUTABLE}: ${BINDIR} ${OBJDIR} ${OBJS}
 
 ####################################
 
-${OBJDIR}/%.o: ${SRCDIR}/%.c ${SRCDIR}/%.h
+# header files are just dependencies of obj files, if they change, we recompile
+${OBJDIR}/%.o: ${SRCDIR}/%.c ${SRCDIR}/${HEADERSDIR}/%.h
 	${CC} ${FLAGS} -c $< -o $@
 
 ####################################
