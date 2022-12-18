@@ -44,9 +44,9 @@ enum { WKCA = 1, WQCA = 2, BKCA = 4, BQCA = 8 };
 
 typedef struct {
     int pieces[BRD_SQ_NUM];
-    U64 pawns[2]; /* 64b => 8B: each B is a row, each b 1 if pawn of given color, 0 otherwise */
-    int kingSq[2]; /* each king side's position */
 
+    U64 pawns[3]; /* 64b => 8B: each B is a row, each b 1 if pawn of given color, 0 otherwise */
+    int kingSq[2]; /* each king side's position */
     int pieceNum[13]; /* number of elements of each type of piece */
     int bigPieceNum[2];
     int minorPieceNum[2];
@@ -75,9 +75,12 @@ typedef struct {
     MOVE_CMD history[MAX_GAME_MOVES];
 } BOARD;
 
+int squareFile(int square, const BOARD *pos);
+int squareRank(int square, const BOARD *pos);
 void resetBoard(BOARD *pos);
 int parseFen(char *fen, BOARD *pos);
 void printBoard(const BOARD* pos);
 void updateMaterialLists(BOARD* pos);
+int checkBoard(const BOARD* pos);
 
 #endif

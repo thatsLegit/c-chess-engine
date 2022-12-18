@@ -3,8 +3,8 @@
 
 #include "board.h"
 
-#define POP(b) popBit(b);
-#define COUNT(b) countBits(b);
+#define POP(bb) popBit(bb);
+#define COUNT(bb) countBits(bb);
 #define CLEAR_BIT(bb, sq) (bb &= clearMask[sq]);
 #define SET_BIT(bb, sq) (bb |= setMask[sq]);
 
