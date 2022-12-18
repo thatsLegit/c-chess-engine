@@ -11,9 +11,14 @@ char fileChar[] = "abcdefgh";
 
 // Follows the order we have the piece set up in board.h:
 // enum { EMPTY, wP, wN, wB, wR, wQ, wK, bP, bN, bB, bR, bQ, bK };
-int PieceBig[13] = {false, false, true, true, true, true, true, false, true, true, true, true, true};
-int PieceMaj[13] = {false, false, false, false, true, true, true, false, false, false, true, true, true};
-int PieceMin[13] = {false, false, true, true, false, false, false, false, true, true, false, false, false};
+int isPieceBig[13] = {false, false, true, true, true, true, true, false, true, true, true, true, true};
+int isPieceMinor[13] = {false, false, true, true, false, false, false, false, true, true, false, false, false};
+int isPieceMajor[13] = {false, false, false, false, true, true, true, false, false, false, true, true, true};
 int PieceValue[13] = {0, 100, 325, 325, 550, 1000, 50000, 100, 325, 325, 550, 1000, 50000};
 int PieceColor[13] = {BOTH, WHITE, WHITE, WHITE, WHITE, WHITE, WHITE,
                       BLACK, BLACK, BLACK, BLACK, BLACK, BLACK};
+
+int isPieceKnight[13] = {false, false, true, false, false, false, false, false, true, false, false, false, false};
+int isPieceKing[13] = {false, false, false, false, false, false, true, false, false, false, false, false, true};
+int isPieceRookOrQueen[13] = {false, false, false, false, true, true, false, false, false, false, true, true, false};
+int isPieceBishopOrQueen[13] = {false, false, false, true, false, true, false, false, false, true, false, true, false};

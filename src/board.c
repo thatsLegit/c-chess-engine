@@ -239,11 +239,11 @@ void updateMaterialLists(BOARD *pos)
 
         int color = pieceColor[piece];
 
-        if (pieceBig[piece])
+        if (isPieceBig[piece])
             pos->bigPieceNum[color] += 1;
-        if (pieceMaj[piece])
+        if (isPieceMajor[piece])
             pos->majorPieceNum[color] += 1;
-        if (pieceMin[piece])
+        if (isPieceMinor[piece])
             pos->minorPieceNum[color] += 1;
 
         pos->material[color] += pieceValue[piece];
@@ -301,11 +301,11 @@ int checkBoard(const BOARD *pos)
         t_pieceNum[t_piece]++;
         int color = pieceColor[t_piece];
 
-        if (pieceBig[t_piece])
+        if (isPieceBig[t_piece])
             t_bigPiece[color]++;
-        if (pieceMin[t_piece])
+        if (isPieceMinor[t_piece])
             t_minPiece[color]++;
-        if (pieceMaj[t_piece])
+        if (isPieceMajor[t_piece])
             t_majPiece[color]++;
 
         t_material[color] += pieceValue[t_piece];

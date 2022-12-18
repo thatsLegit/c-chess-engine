@@ -28,14 +28,14 @@ typedef struct {
 
 enum {
     /* 0 -> 20 OutOfRange */
-    A1 = 21, B1, C1, D1, E1, F1, G1, H1, /* 29, 3O OOR */
-    A2 = 31, B2, C2, D2, E2, F2, G2, H2, /* 39, 4O OOR */
-    A3 = 41, B3, C3, D3, E3, F3, G3, H3, /* 49, 5O OOR */
-    A4 = 51, B4, C4, D4, E4, F4, G4, H4, /* 59, 6O OOR */
-    A5 = 61, B5, C5, D5, E5, F5, G5, H5, /* 69, 7O OOR */
-    A6 = 71, B6, C6, D6, E6, F6, G6, H6, /* 79, 8O OOR */
-    A7 = 81, B7, C7, D7, E7, F7, G7, H7, /* 89, 9O OOR */
-    A8 = 91, B8, C8, D8, E8, F8, G8, H8, NO_SQ, OFFBOARD /* 99 -> 120 OOR */
+    H1 = 21, G1, F1, E1, D1, C1, B1, A1, /* 29, 3O OOR */
+    H2 = 31, G2, F2, E2, D2, C2, B2, A2, /* 39, 4O OOR */
+    H3 = 41, G3, F3, E3, D3, C3, B3, A3, /* 49, 5O OOR */
+    H4 = 51, G4, F4, E4, D4, C4, B4, A4, /* 59, 6O OOR */
+    H5 = 61, G5, F5, E5, D5, C5, B5, A5, /* 69, 7O OOR */
+    H6 = 71, G6, F6, E6, D6, C6, B6, A6, /* 79, 8O OOR */
+    H7 = 81, G7, F7, E7, D7, C7, B7, A7, /* 89, 9O OOR */
+    H8 = 91, G8, F8, E8, D8, C8, B8, A8, NO_SQ, OFFBOARD /* 99 -> 120 OOR */
 };
 
 // castling permissions

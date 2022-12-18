@@ -8,10 +8,15 @@ extern char sideChar[];
 extern char rankChar[];
 extern char fileChar[];
 
-int pieceBig[13];
-int pieceMaj[13];
-int pieceMin[13];
+int isPieceBig[13];
+int isPieceMinor[13];
+int isPieceMajor[13];
 int pieceValue[13];
 int pieceColor[13];
+
+int isPieceKnight[13];
+int isPieceKing[13];
+int isPieceRookOrQueen[13];
+int isPieceBishopOrQueen[13];
 
 #endif
