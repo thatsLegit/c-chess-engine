@@ -19,12 +19,36 @@ enum { RANK_1, RANK_2, RANK_3, RANK_4, RANK_5, RANK_6, RANK_7, RANK_8, RANK_NONE
 enum { WHITE, BLACK, BOTH };
 
 typedef struct {
+    /*
+        Structure of a move:
+
+        0000 0000 0000 0000 0000 0111 1111 -> from, 0x7F
+        0000 0000 0000 0011 1111 1000 0000 -> to >> 7, 0x7F
+        0000 0000 0011 1100 0000 0000 0000 -> captured piece >> 14, 0xF 
+        0000 0000 0100 0000 0000 0000 0000 -> en passant ? 0x40000
+        0000 0000 1000 0000 0000 0000 0000 -> pawn start ? 0x80000
+        0000 1111 0000 0000 0000 0000 0000 -> promoted piece >> 20, 0xF
+        0001 0000 0000 0000 0000 0000 0000 -> castling ? 0x1000000
+    */
     int move;
     int castlePerm;
     int enPas;
     int fiftyMove;
     U64 posKey;
 } MOVE_CMD;
+
+#define FROM_SQ(m) ((m) & 0x7F);
+#define TO_SQ(m) ((m >> 7) & 0x7F);
+#define CAPT_PIECE(m) ((m >> 14) & 0xF);
+#define EN_PASSANT 0x40000;
+#define PAWN_START 0x80000;
+#define PROMOTED_PIECE(m) ((m >> 20) & 0xF);
+#define CASTLING 0x1000000;
+
+// has any piece been captured ?
+#define MOVE_CAPT_FLAG 0x7C000
+// has any piece been promoted ?
+#define MOVE_PROM_FLAG 0xF00000
 
 enum {
     /* 0 -> 20 OutOfRange */
