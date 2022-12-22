@@ -37,13 +37,13 @@ typedef struct {
     U64 posKey;
 } MOVE_CMD;
 
-#define FROM_SQ(m) ((m) & 0x7F);
-#define TO_SQ(m) ((m >> 7) & 0x7F);
-#define CAPT_PIECE(m) ((m >> 14) & 0xF);
-#define EN_PASSANT 0x40000;
-#define PAWN_START 0x80000;
-#define PROMOTED_PIECE(m) ((m >> 20) & 0xF);
-#define CASTLING 0x1000000;
+#define FROM_SQ(m) ((m) & 0x7F)
+#define TO_SQ(m) ((m >> 7) & 0x7F)
+#define CAPT_PIECE(m) ((m >> 14) & 0xF)
+#define EN_PASSANT 0x40000
+#define PAWN_START 0x80000
+#define PROMOTED_PIECE(m) ((m >> 20) & 0xF)
+#define CASTLING 0x1000000
 
 // has any piece been captured ?
 #define MOVE_CAPT_FLAG 0x7C000

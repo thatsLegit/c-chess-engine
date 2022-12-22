@@ -11,6 +11,20 @@
 #define FEN_3 "rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2"
 #define FEN_4 "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1"
 
+void printBit(int move)
+{
+    printf("%d as binary: ", move);
+
+    for (int index = 27; index >= 0; index--)
+    {
+        ((1 << index) & move) ? printf("1") : printf("0");
+        if (index != 28 && index % 4 == 0)
+            putc(' ', stdout);
+    }
+
+    printf("\n");
+}
+
 int main()
 {
     allInit();
@@ -19,16 +33,17 @@ int main()
     parseFen(FEN_4, &board);
     printBoard(&board);
 
-    printf("\n wP: \n");
-    printBitBoard(board.pawns[WHITE]);
-
-    printf("\n bP: \n");
-    printBitBoard(board.pawns[BLACK]);
-
-    printf("\n all P: \n");
-    printBitBoard(board.pawns[BOTH]);
-
     assert(checkBoard(&board));
+
+    int move = 0;
+
+    int from = 21, to = 54, capture = wN;
+    move = (move | from) | (to << 7) | (capture << 14);
+
+    printf("\ndecimal: %d, hex: %X\n", move, move);
+    printBit(move);
+
+    printf("\nfrom: %d, to: %d, capture: %d\n", FROM_SQ(move), TO_SQ(move), CAPT_PIECE(move));
 
     return 0;
 }
