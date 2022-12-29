@@ -5,6 +5,7 @@
 #include "typedefs/board.h"
 #include "typedefs/bitboards.h"
 #include "typedefs/init.h"
+#include "typedefs/io.h"
 
 #define FEN_1 "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1"
 #define FEN_2 "rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq c6 0 2"
@@ -17,8 +18,8 @@ void printBit(int move)
 
     for (int index = 27; index >= 0; index--)
     {
-        ((1 << index) & move) ? printf("1") : printf("0");
-        if (index != 28 && index % 4 == 0)
+        ((1 << index) & move) ? putc('1', stdout) : putc('0', stdout);
+        if (index % 4 == 0)
             putc(' ', stdout);
     }
 
@@ -28,22 +29,17 @@ void printBit(int move)
 int main()
 {
     allInit();
+
     BOARD board;
-
-    parseFen(FEN_4, &board);
-    printBoard(&board);
-
-    assert(checkBoard(&board));
-
     int move = 0;
-
-    int from = 21, to = 54, capture = wN;
-    move = (move | from) | (to << 7) | (capture << 14);
-
-    printf("\ndecimal: %d, hex: %X\n", move, move);
-    printBit(move);
+    int from = G7, to = H8, capture = bN, promotion = wQ;
+    move = (move | from) | (to << 7) | (capture << 14) | (promotion << 20);
 
     printf("\nfrom: %d, to: %d, capture: %d\n", FROM_SQ(move), TO_SQ(move), CAPT_PIECE(move));
+
+    printf("Algebraic from square: %s\n", printSquare(from, &board));
+    printf("Algebraic to square: %s\n", printSquare(to, &board));
+    printf("Algebraic move: %s\n", printMove(move, &board));
 
     return 0;
 }

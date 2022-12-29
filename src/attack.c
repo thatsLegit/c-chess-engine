@@ -13,11 +13,11 @@ const int KingDirection[8] = {-1, -10, 1, 10, -9, -11, 11, 9};
 int isSquareAttacked(int square, int side, BOARD *pos)
 {
     // pawns
-    if (side == WHITE && (pos->pieces[square - 11] == wP || pos->pieces[square - 9] == wP))
+    if (side == WHITE && (pos->pieces[square - 11] == bP || pos->pieces[square - 9] == bP))
     {
         return true;
     }
-    if (side == BLACK && (pos->pieces[square + 11] == bP || pos->pieces[square + 9] == bP))
+    if (side == BLACK && (pos->pieces[square + 11] == wP || pos->pieces[square + 9] == wP))
     {
         return true;
     }

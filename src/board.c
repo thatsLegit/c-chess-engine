@@ -19,7 +19,7 @@ int squareRank(int square, const BOARD *pos)
 {
     if (pos->pieces[square] == OFFBOARD)
         return OFFBOARD;
-    return (square / 10) - 2;
+    return 10 - (square / 10);
 }
 
 void resetBoard(BOARD *pos)
