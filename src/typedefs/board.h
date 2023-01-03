@@ -9,6 +9,7 @@ typedef unsigned long long U64;
 #define BRD_SQ_NUM 120
 
 #define MAX_GAME_MOVES 2048
+#define MAX_POSITION_MOVES 256
 
 #define START_FEN "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
 
@@ -36,6 +37,11 @@ typedef struct {
     int fiftyMove;
     U64 posKey;
 } MOVE_CMD;
+
+typedef struct {
+    MOVE_CMD moves[MAX_POSITION_MOVES];
+    int count;
+} MOVE_CMD_LIST;
 
 #define FROM_SQ(m) ((m) & 0x7F)
 #define TO_SQ(m) ((m >> 7) & 0x7F)
