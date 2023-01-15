@@ -12,6 +12,8 @@ const int KingDirection[8] = {-1, -10, 1, 10, -9, -11, 11, 9};
 
 int isSquareAttacked(int square, int side, BOARD *pos)
 {
+    checkBoard(pos);
+
     // pawns
     if (side == WHITE && (pos->pieces[square - 11] == bP || pos->pieces[square - 9] == bP))
     {

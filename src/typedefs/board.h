@@ -9,6 +9,7 @@ typedef unsigned long long U64;
 #define BRD_SQ_NUM 120
 
 #define MAX_GAME_MOVES 2048
+#define MAX_POSITION_MOVES 256
 
 #define START_FEN "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
 
@@ -37,18 +38,38 @@ typedef struct {
     U64 posKey;
 } MOVE_CMD;
 
-#define FROM_SQ(m) ((m) & 0x7F)
-#define TO_SQ(m) ((m >> 7) & 0x7F)
-#define CAPT_PIECE(m) ((m >> 14) & 0xF)
+// retrieves the 120 from square within a move of a MOVE_CMD
+#define FROM_SQ(move) ((move) & 0x7F)
+// retrieves the 120 to square within a move of a MOVE_CMD
+#define TO_SQ(move) ((move >> 7) & 0x7F)
+// retrieves the captured piece id within a move of a MOVE_CMD
+#define CAPT_PIECE(move) ((move >> 14) & 0xF)
+// retrieves the promoted piece id within a move of a MOVE_CMD
+#define PROMOTED_PIECE(move) ((move >> 20) & 0xF)
+
+// "read or write" flags; you can only have one of these in a move...
+// retrieves the en passant bool within a move of a MOVE_CMD
 #define EN_PASSANT 0x40000
+// retrieves the pawn start bool within a move of a MOVE_CMD
 #define PAWN_START 0x80000
-#define PROMOTED_PIECE(m) ((m >> 20) & 0xF)
+// retrieves the is move castling bool within a move of a MOVE_CMD
 #define CASTLING 0x1000000
 
-// has any piece been captured ?
+// "read only" flags
+// retrieves has any piece been captured bool within a move of a MOVE_CMD ?
 #define MOVE_CAPT_FLAG 0x7C000
-// has any piece been promoted ?
+// retrieves has any piece been promoted bool within a move of a MOVE_CMD ? ?
 #define MOVE_PROM_FLAG 0xF00000
+
+typedef struct {
+    int move;
+    int score;
+} POTENTIAL_MOVE;
+
+typedef struct {
+    POTENTIAL_MOVE moves[MAX_POSITION_MOVES];
+    int count;
+} POTENTIAL_MOVE_LIST;
 
 enum {
     /* 0 -> 20 OutOfRange */

@@ -17,6 +17,7 @@ char *printSquare(int square, BOARD *pos)
     return sqStr;
 }
 
+// 1st parameter move comes from POTENTIAL_MOVE or MOVE_CMD
 char *printMove(int move, BOARD *pos)
 {
     static char moveStr[6];
@@ -47,4 +48,15 @@ char *printMove(int move, BOARD *pos)
     }
 
     return moveStr;
+}
+
+void printMoveList(POTENTIAL_MOVE_LIST *list, BOARD *pos)
+{
+    for (int i = 0; i < list->count; i++)
+    {
+        int score = list->moves[i].score;
+        int move = list->moves[i].move;
+
+        printf("move:%d > %s score: %d", i + 1, printMove(move, pos), score);
+    }
 }
