@@ -88,16 +88,17 @@ enum {
 enum { WKCA = 1, WQCA = 2, BKCA = 4, BQCA = 8 };
 
 typedef struct {
-    int pieces[BRD_SQ_NUM];
+    int pieces[BRD_SQ_NUM]; /* array of piece index */
 
     U64 pawns[3]; /* 64b => 8B: each B is a row, each b 1 if pawn of given color, 0 otherwise */
     int kingSq[2]; /* each king side's position */
     int pieceNum[13]; /* number of elements of each type of piece */
-    int bigPieceNum[2];
-    int minorPieceNum[2];
-    int majorPieceNum[2];
+    int bigPieceNum[2]; /* number of elements of each type of big piece */
+    int minorPieceNum[2]; /* number of elements of each type of minor piece */
+    int majorPieceNum[2]; /* number of elements of each type of major piece */
     int material[2]; /* value of material for black and white */
 
+    // gives the position of each piece
     // moving pieces optimization (instead of using int pieces[BRD_SQ_NUM]): 
     // 13: we have 13 different pieces on the board
     // 10: we can have no more than 10 of each piece

@@ -12,7 +12,7 @@ char *printSquare(int square, BOARD *pos)
     int file = squareFile(square, pos);
     int rank = squareRank(square, pos);
 
-    sprintf(sqStr, "%c%c", 'a' + file, '0' + rank);
+    sprintf(sqStr, "%c%c", 'a' + file, '1' + rank);
 
     return sqStr;
 }
@@ -31,7 +31,7 @@ char *printMove(int move, BOARD *pos)
 
     if (!promoted)
     {
-        sprintf(moveStr, "%c%c%c%c", 'a' + fileFrom, '0' + rankFrom, 'a' + fileTo, '0' + rankTo);
+        sprintf(moveStr, "%c%c%c%c", 'a' + fileFrom, '1' + rankFrom, 'a' + fileTo, '1' + rankTo);
     }
     else
     {
@@ -44,7 +44,7 @@ char *printMove(int move, BOARD *pos)
         if (isPieceBishopOrQueen[promoted] && !isPieceRookOrQueen[promoted])
             pchar = 'b';
 
-        sprintf(moveStr, "%c%c%c%c%c", 'a' + fileFrom, '0' + rankFrom, 'a' + fileTo, '0' + rankTo, pchar);
+        sprintf(moveStr, "%c%c%c%c%c", 'a' + fileFrom, '1' + rankFrom, 'a' + fileTo, '1' + rankTo, pchar);
     }
 
     return moveStr;
@@ -57,6 +57,6 @@ void printMoveList(POTENTIAL_MOVE_LIST *list, BOARD *pos)
         int score = list->moves[i].score;
         int move = list->moves[i].move;
 
-        printf("move:%d > %s score: %d", i + 1, printMove(move, pos), score);
+        printf("move:%d > %s score: %d\n", i + 1, printMove(move, pos), score);
     }
 }

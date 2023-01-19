@@ -9,7 +9,7 @@
 #define SET_BIT(bb, sq) (bb |= setMask[sq]);
 
 // 120 based index
-#define FR2SQ(f, r) (((f) + 21) + ((r)*10))
+#define FR2SQ(f, r) (((f) + 21) + ((7 - (r)) * 10))
 #define SQ64(sq120) (Sq120ToSq64[(sq120)])
 #define SQ120(sq64) (Sq64ToSq120[(sq64)])
 

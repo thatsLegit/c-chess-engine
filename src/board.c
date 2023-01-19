@@ -8,6 +8,7 @@
 #include "typedefs/hashkeys.h"
 #include "typedefs/data.h"
 
+// return value ranging from 0 to 7
 int squareFile(int square, const BOARD *pos)
 {
     if (pos->pieces[square] == OFFBOARD)
@@ -15,11 +16,12 @@ int squareFile(int square, const BOARD *pos)
     return (square % 10) - 1;
 }
 
+// return value ranging from 0 to 7
 int squareRank(int square, const BOARD *pos)
 {
     if (pos->pieces[square] == OFFBOARD)
         return OFFBOARD;
-    return 10 - (square / 10);
+    return 9 - (square / 10);
 }
 
 void resetBoard(BOARD *pos)
@@ -248,7 +250,8 @@ void updateMaterialLists(BOARD *pos)
 
         pos->material[color] += pieceValue[piece];
 
-        pos->pieceList[piece][pos->pieceNum[piece]++] = i; /* set the position sq120 */
+        pos->pieceList[piece][pos->pieceNum[piece]] = i; /* set the position sq120 */
+        pos->pieceNum[piece] += 1;
 
         if (piece == bK)
             pos->kingSq[BLACK] = i;

@@ -2,5 +2,6 @@
 #define INIT_H
 
 void allInit();
+void debugSquares();
 
 #endif
