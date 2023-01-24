@@ -26,6 +26,7 @@ void addEnPassantMove(BOARD *pos, int move, POTENTIAL_MOVE_LIST *list)
     list->count++;
 }
 
+// WHITE
 void addWhitePawnCaptureMove(POTENTIAL_MOVE_LIST *list, BOARD *pos, int from, int to, int capture)
 {
     if (squareRank(from, pos) == RANK_7)
@@ -39,7 +40,6 @@ void addWhitePawnCaptureMove(POTENTIAL_MOVE_LIST *list, BOARD *pos, int from, in
         addCaptureMove(pos, MOVE_FACTORY(from, to, capture, EMPTY, 0), list);
     }
 }
-
 void addWhitePawnMove(POTENTIAL_MOVE_LIST *list, BOARD *pos, int from, int to)
 {
     if (squareRank(from, pos) == RANK_7)
@@ -47,6 +47,34 @@ void addWhitePawnMove(POTENTIAL_MOVE_LIST *list, BOARD *pos, int from, int to)
         // with promotion
         addQuietMove(pos, MOVE_FACTORY(from, to, EMPTY, wQ, 0), list);
         addQuietMove(pos, MOVE_FACTORY(from, to, EMPTY, wK, 0), list);
+    }
+    else
+    {
+        addQuietMove(pos, MOVE_FACTORY(from, to, EMPTY, EMPTY, 0), list);
+    }
+}
+
+// BLACK
+void addBlackPawnCaptureMove(POTENTIAL_MOVE_LIST *list, BOARD *pos, int from, int to, int capture)
+{
+    if (squareRank(from, pos) == RANK_2)
+    {
+        // capture with promotion
+        addCaptureMove(pos, MOVE_FACTORY(from, to, capture, bQ, 0), list);
+        addCaptureMove(pos, MOVE_FACTORY(from, to, capture, bK, 0), list);
+    }
+    else
+    {
+        addCaptureMove(pos, MOVE_FACTORY(from, to, capture, EMPTY, 0), list);
+    }
+}
+void addBlackPawnMove(POTENTIAL_MOVE_LIST *list, BOARD *pos, int from, int to)
+{
+    if (squareRank(from, pos) == RANK_2)
+    {
+        // with promotion
+        addQuietMove(pos, MOVE_FACTORY(from, to, EMPTY, bQ, 0), list);
+        addQuietMove(pos, MOVE_FACTORY(from, to, EMPTY, bK, 0), list);
     }
     else
     {
@@ -100,6 +128,48 @@ void generateAllMoves(BOARD *pos, POTENTIAL_MOVE_LIST *list)
                 if (square - 11 == pos->enPas)
                 {
                     addEnPassantMove(pos, MOVE_FACTORY(square, (square - 11), EMPTY, EMPTY, EN_PASSANT), list);
+                }
+            }
+        }
+    }
+    else
+    {
+        for (int i = 0; i < pos->pieceNum[bP]; i++)
+        {
+            assert(squareFile(pos->pieceList[bP][i], pos) != OFFBOARD);
+            square = pos->pieceList[bP][i];
+
+            // moving forward
+            if (pos->pieces[square + 10] == EMPTY)
+            {
+                addBlackPawnMove(list, pos, square, square + 10);
+                if (squareRank(square, pos) == RANK_7 && pos->pieces[square + 20] == EMPTY)
+                {
+                    addQuietMove(pos, MOVE_FACTORY(square, (square + 20), EMPTY, EMPTY, PAWN_START), list);
+                }
+            }
+
+            // capture
+            if (pos->pieces[square + 11] != OFFBOARD && pieceColor[pos->pieces[square + 11]] == WHITE)
+            {
+                addBlackPawnCaptureMove(list, pos, square, square + 11, pos->pieces[square + 11]);
+            }
+            if (pos->pieces[square + 9] != OFFBOARD && pieceColor[pos->pieces[square + 9]] == WHITE)
+            {
+                addBlackPawnCaptureMove(list, pos, square, square + 9, pos->pieces[square + 9]);
+            }
+
+            // en passant
+            if (pos->enPas != NO_SQ)
+            {
+                if (square + 9 == pos->enPas)
+                {
+                    // no capture wtf ?
+                    addEnPassantMove(pos, MOVE_FACTORY(square, (square + 9), EMPTY, EMPTY, EN_PASSANT), list);
+                }
+                if (square + 11 == pos->enPas)
+                {
+                    addEnPassantMove(pos, MOVE_FACTORY(square, (square + 11), EMPTY, EMPTY, EN_PASSANT), list);
                 }
             }
         }
