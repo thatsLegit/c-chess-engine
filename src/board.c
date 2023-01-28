@@ -24,44 +24,6 @@ int squareRank(int square, const BOARD *pos)
     return 9 - (square / 10);
 }
 
-void resetBoard(BOARD *pos)
-{
-    for (int i = 0; i < BRD_SQ_NUM; i++)
-    {
-        pos->pieces[i] = OFFBOARD;
-    }
-    for (int i = 0; i < 64; i++)
-    {
-        pos->pieces[SQ120(i)] = EMPTY;
-    }
-
-    for (int i = 0; i < 3; i++)
-    {
-        pos->pawns[i] = 0ULL;
-        pos->bigPieceNum[i] = 0;
-        pos->minorPieceNum[i] = 0;
-        pos->majorPieceNum[i] = 0;
-    }
-
-    for (int i = 0; i < 13; i++)
-    {
-        pos->pieceNum[i] = 0;
-    }
-
-    pos->kingSq[BLACK] = pos->kingSq[BLACK] = NO_SQ;
-
-    pos->side = BOTH;
-    pos->enPas = NO_SQ;
-    pos->fiftyMove = 0;
-
-    pos->ply = 0;
-    pos->historyPly = 0;
-
-    pos->castlePerm = 0;
-
-    pos->posKey = 0ULL;
-}
-
 // Mutates the board according to the given fen notation
 // "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
 // 1st part of the sequence is all the rows separated by /. Letter => piece, number => empty square
@@ -360,6 +322,43 @@ int checkBoard(const BOARD *pos)
     assert(pos->castlePerm >= 0 && pos->castlePerm <= 15);
 
     return true;
+}
+
+void resetBoard(BOARD *pos)
+{
+    pos->kingSq[BLACK] = pos->kingSq[WHITE] = NO_SQ;
+
+    for (int i = 0; i < BRD_SQ_NUM; i++)
+    {
+        pos->pieces[i] = OFFBOARD;
+    }
+    for (int i = 0; i < 64; i++)
+    {
+        pos->pieces[SQ120(i)] = EMPTY;
+    }
+    for (int i = 0; i < 3; i++)
+    {
+        pos->pawns[i] = 0ULL;
+    }
+    for (int i = 0; i < 2; i++)
+    {
+        pos->bigPieceNum[i] = 0;
+        pos->minorPieceNum[i] = 0;
+        pos->majorPieceNum[i] = 0;
+        pos->material[i] = 0;
+    }
+    for (int i = 0; i < 13; i++)
+    {
+        pos->pieceNum[i] = 0;
+    }
+
+    pos->side = BOTH;
+    pos->enPas = NO_SQ;
+    pos->fiftyMove = 0;
+    pos->ply = 0;
+    pos->historyPly = 0;
+    pos->castlePerm = 0;
+    pos->posKey = 0ULL;
 }
 
 void printBoard(const BOARD *pos)

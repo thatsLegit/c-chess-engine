@@ -3,6 +3,13 @@
 
 #include "board.h"
 
+#define MOVE_FACTORY(from, to, capt, prom, flag) ((from) | (to << 7) | (capt << 14) | (prom << 20) | (flag))
+
+int slidingPiecesArr[8];
+int nonSlidingPiecesArr[6];
+int slidingPiecesArrIdx[2];
+int nonSlidingPiecesArrIdx[2];
+
 void addQuietMove(BOARD *pos, int move, POTENTIAL_MOVE_LIST *list);
 void addCaptureMove(BOARD *pos, int move, POTENTIAL_MOVE_LIST *list);
 void addEnPassantMove(BOARD *pos, int move, POTENTIAL_MOVE_LIST *list);

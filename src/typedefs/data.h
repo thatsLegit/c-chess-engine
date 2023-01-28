@@ -11,6 +11,7 @@ extern char fileChar[];
 int isPieceBig[13];
 int isPieceMinor[13];
 int isPieceMajor[13];
+int isPieceSliding[13];
 int pieceValue[13];
 int pieceColor[13];
 

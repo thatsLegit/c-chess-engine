@@ -14,13 +14,14 @@
 #define FEN_3 "rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2"
 #define FEN_WHITE_PAWN "rnbqkb1r/pp1p1pPp/8/2p1pP2/1P1P4/3P3P/P1P1P3/RNBQKBNR w KQkq e6 0 1"
 #define FEN_BLACK_PAWN "rnbqkbnr/p1p1p3/3p3p/1p1p4/2P1Pp2/8/PP1P1PpP/RNBQKB1R b - e3 0 1"
+#define KNIGHTS_FEN "5k2/1n6/4n3/6N1/8/3N4/8/5K2 b - - 0 1"
 
 int main()
 {
     allInit();
 
     BOARD board;
-    parseFen(FEN_BLACK_PAWN, &board);
+    parseFen(KNIGHTS_FEN, &board);
     printBoard(&board);
     debugSquares();
 
