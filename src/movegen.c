@@ -6,11 +6,11 @@
 #include "typedefs/io.h"
 
 // some interesting data structure here...
-int slidingPiecesArr[8] = {wB, wR, wQ, 0, bB, bR, bQ, 0};
-int nonSlidingPiecesArr[6] = {wN, wK, 0, bN, bK, 0};
+int slidingPieces[8] = {wB, wR, wQ, 0, bB, bR, bQ, 0};
+int nonSlidingPieces[6] = {wN, wK, 0, bN, bK, 0};
 // idx: 0 white, idx: 1 black
-int slidingPiecesArrSideIdx[2] = {0, 4};
-int nonSlidingPiecesArrIdx[2] = {0, 3};
+int slidingPiecesIdx[2] = {0, 4};
+int nonSlidingPiecesIdx[2] = {0, 3};
 
 // every piece micro-movements (similar to what's in attack.c)
 const int pieceDirections[13][8] = {
@@ -203,22 +203,51 @@ void generateAllMoves(BOARD *pos, POTENTIAL_MOVE_LIST *list)
         }
     }
 
-    int t_square, direction, piece, pieceIdx = 0;
+    int piece, pieceIdx = 0;
 
     // Loop for sliding pieces
 
-    pieceIdx = slidingPiecesArrIdx[side];
-    piece = slidingPiecesArr[pieceIdx++];
+    pieceIdx = slidingPiecesIdx[side];
+    piece = slidingPieces[pieceIdx++];
 
     while (piece != 0)
     {
-        piece = slidingPiecesArr[pieceIdx++];
+        printf("generating moves for sliders, piece: %d, index: %d\n", piece, pieceIdx - 1);
+        for (int i = 0; i < pos->pieceNum[piece]; i++)
+        {
+            int square = pos->pieceList[piece][i];
+            printf("piece %c on square %s\n", pieceChar[piece], printSquare(square, pos));
+
+            for (int direction = 0; direction < numDirections[piece]; direction++)
+            {
+                int dir = pieceDirections[piece][direction];
+                int t_square = square + dir;
+
+                while (pos->pieces[t_square] != OFFBOARD)
+                {
+                    if (pos->pieces[t_square] != EMPTY)
+                    {
+                        // opposite color piece
+                        if (pieceColor[pos->pieces[t_square]] == (side ^ 1))
+                        {
+                            printf("\t\tGenerate a capture on square %s\n", printSquare(t_square, pos));
+                        }
+                        break;
+                    }
+
+                    printf("Generate a normal piece move on square %s\n", printSquare(t_square, pos));
+                    t_square += dir;
+                }
+            }
+        }
+
+        piece = slidingPieces[pieceIdx++];
     }
 
     // Loop for non sliding pieces
 
-    pieceIdx = nonSlidingPiecesArrIdx[side];
-    piece = nonSlidingPiecesArr[pieceIdx++];
+    pieceIdx = nonSlidingPiecesIdx[side];
+    piece = nonSlidingPieces[pieceIdx++];
 
     while (piece != 0)
     {
@@ -230,13 +259,14 @@ void generateAllMoves(BOARD *pos, POTENTIAL_MOVE_LIST *list)
 
             for (int direction = 0; direction < numDirections[piece]; direction++)
             {
-                t_square = square + pieceDirections[piece][direction];
+                int t_square = square + pieceDirections[piece][direction];
 
                 if (pos->pieces[t_square] == OFFBOARD)
                     continue;
 
                 if (pos->pieces[t_square] != EMPTY)
                 {
+                    // opposite color piece
                     if (pieceColor[pos->pieces[t_square]] == (side ^ 1))
                     {
                         printf("\t\tGenerate a capture on square %s\n", printSquare(t_square, pos));
@@ -248,6 +278,6 @@ void generateAllMoves(BOARD *pos, POTENTIAL_MOVE_LIST *list)
             }
         }
 
-        piece = nonSlidingPiecesArr[pieceIdx++];
+        piece = nonSlidingPieces[pieceIdx++];
     }
 }
