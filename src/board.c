@@ -155,7 +155,7 @@ int parseFen(char *fen, BOARD *pos)
             pos->castlePerm |= BKCA;
             break;
         case 'q':
-            pos->castlePerm |= WQCA;
+            pos->castlePerm |= BQCA;
             break;
         default:
             break;

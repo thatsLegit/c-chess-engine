@@ -1,9 +1,11 @@
 #include <assert.h>
 #include <stdio.h>
+#include <stdbool.h>
 #include "typedefs/board.h"
 #include "typedefs/movegen.h"
 #include "typedefs/data.h"
 #include "typedefs/io.h"
+#include "typedefs/attack.h"
 
 // some interesting data structure here...
 int slidingPieces[8] = {wB, wR, wQ, 0, bB, bR, bQ, 0};
@@ -120,6 +122,7 @@ void generateAllMoves(BOARD *pos, POTENTIAL_MOVE_LIST *list)
 
     if (side == WHITE)
     {
+        // PAWNS
         for (int i = 0; i < pos->pieceNum[wP]; i++)
         {
             assert(squareFile(pos->pieceList[wP][i], pos) != OFFBOARD);
@@ -157,6 +160,32 @@ void generateAllMoves(BOARD *pos, POTENTIAL_MOVE_LIST *list)
                 {
                     addEnPassantMove(pos, MOVE_FACTORY(square, (square - 11), EMPTY, EMPTY, EN_PASSANT), list);
                 }
+            }
+        }
+
+        // CASTLING
+        // H1 rook and the king haven't moved yet
+        // is the king (e1) attacked ?
+        // are f1 and g1 attacked ?
+        // are f1 and g1 empty ?
+        if (
+            pos->castlePerm & WKCA &&
+            pos->pieces[F1] == EMPTY && pos->pieces[G1] == EMPTY &&
+            !isSquareAttacked(E1, BLACK, pos) &&
+            !isSquareAttacked(F1, BLACK, pos) &&
+            !isSquareAttacked(G1, BLACK, pos))
+        {
+            addQuietMove(pos, MOVE_FACTORY(E1, G1, EMPTY, EMPTY, CASTLING), list);
+        }
+        if (pos->castlePerm & WQCA)
+        {
+            if (
+                pos->pieces[D1] == EMPTY && pos->pieces[C1] == EMPTY && pos->pieces[B1] == EMPTY &&
+                !isSquareAttacked(E1, BLACK, pos) &&
+                !isSquareAttacked(D1, BLACK, pos) &&
+                !isSquareAttacked(C1, BLACK, pos))
+            {
+                addQuietMove(pos, MOVE_FACTORY(E1, C1, EMPTY, EMPTY, CASTLING), list);
             }
         }
     }
@@ -201,6 +230,30 @@ void generateAllMoves(BOARD *pos, POTENTIAL_MOVE_LIST *list)
                 }
             }
         }
+
+        // CASTLING
+        if (pos->castlePerm & BKCA)
+        {
+            if (
+                pos->pieces[F8] == EMPTY && pos->pieces[G8] == EMPTY &&
+                !isSquareAttacked(E8, WHITE, pos) &&
+                !isSquareAttacked(F8, WHITE, pos) &&
+                !isSquareAttacked(G8, WHITE, pos))
+            {
+                addQuietMove(pos, MOVE_FACTORY(E8, G8, EMPTY, EMPTY, CASTLING), list);
+            }
+        }
+        if (pos->castlePerm & BQCA)
+        {
+            if (
+                pos->pieces[D8] == EMPTY && pos->pieces[C8] == EMPTY && pos->pieces[B8] == EMPTY &&
+                !isSquareAttacked(E8, WHITE, pos) &&
+                !isSquareAttacked(D8, WHITE, pos) &&
+                !isSquareAttacked(C8, WHITE, pos))
+            {
+                addQuietMove(pos, MOVE_FACTORY(E8, C8, EMPTY, EMPTY, CASTLING), list);
+            }
+        }
     }
 
     int piece, pieceIdx = 0;
@@ -212,11 +265,9 @@ void generateAllMoves(BOARD *pos, POTENTIAL_MOVE_LIST *list)
 
     while (piece != 0)
     {
-        printf("generating moves for sliders, piece: %d, index: %d\n", piece, pieceIdx - 1);
         for (int i = 0; i < pos->pieceNum[piece]; i++)
         {
             int square = pos->pieceList[piece][i];
-            printf("piece %c on square %s\n", pieceChar[piece], printSquare(square, pos));
 
             for (int direction = 0; direction < numDirections[piece]; direction++)
             {
@@ -230,12 +281,12 @@ void generateAllMoves(BOARD *pos, POTENTIAL_MOVE_LIST *list)
                         // opposite color piece
                         if (pieceColor[pos->pieces[t_square]] == (side ^ 1))
                         {
-                            printf("\t\tGenerate a capture on square %s\n", printSquare(t_square, pos));
+                            addCaptureMove(pos, MOVE_FACTORY(square, t_square, pos->pieces[t_square], EMPTY, 0), list);
                         }
                         break;
                     }
 
-                    printf("Generate a normal piece move on square %s\n", printSquare(t_square, pos));
+                    addQuietMove(pos, MOVE_FACTORY(square, t_square, EMPTY, EMPTY, 0), list);
                     t_square += dir;
                 }
             }
@@ -251,11 +302,9 @@ void generateAllMoves(BOARD *pos, POTENTIAL_MOVE_LIST *list)
 
     while (piece != 0)
     {
-        printf("generating moves for non sliders, piece: %d, index: %d\n", piece, pieceIdx - 1);
         for (int i = 0; i < pos->pieceNum[piece]; i++)
         {
             int square = pos->pieceList[piece][i];
-            printf("piece %c on square %s\n", pieceChar[piece], printSquare(square, pos));
 
             for (int direction = 0; direction < numDirections[piece]; direction++)
             {
@@ -269,12 +318,12 @@ void generateAllMoves(BOARD *pos, POTENTIAL_MOVE_LIST *list)
                     // opposite color piece
                     if (pieceColor[pos->pieces[t_square]] == (side ^ 1))
                     {
-                        printf("\t\tGenerate a capture on square %s\n", printSquare(t_square, pos));
+                        addCaptureMove(pos, MOVE_FACTORY(square, t_square, pos->pieces[t_square], EMPTY, 0), list);
                     }
                     continue;
                 }
 
-                printf("Generate a normal piece move on square %s\n", printSquare(t_square, pos));
+                addQuietMove(pos, MOVE_FACTORY(square, t_square, EMPTY, EMPTY, 0), list);
             }
         }
 

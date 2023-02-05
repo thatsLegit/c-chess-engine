@@ -10,16 +10,16 @@ const int RookDirection[4] = {-1, -10, 1, 10};
 const int BishopDirection[4] = {-9, -11, 11, 9};
 const int KingDirection[8] = {-1, -10, 1, 10, -9, -11, 11, 9};
 
-int isSquareAttacked(int square, int side, BOARD *pos)
+bool isSquareAttacked(int square, int side, BOARD *pos)
 {
     checkBoard(pos);
 
     // pawns
-    if (side == WHITE && (pos->pieces[square - 11] == bP || pos->pieces[square - 9] == bP))
+    if (side == WHITE && (pos->pieces[square + 11] == wP || pos->pieces[square + 9] == wP))
     {
         return true;
     }
-    if (side == BLACK && (pos->pieces[square + 11] == wP || pos->pieces[square + 9] == wP))
+    if (side == BLACK && (pos->pieces[square - 11] == bP || pos->pieces[square - 9] == bP))
     {
         return true;
     }
