@@ -1,0 +1,15 @@
+ /* Making A Move.... */
+
+1. make (move)
+2. Get the from, to, cap from the move
+3. store the current position in the pos->history array (move & posKey ?)
+4. move the current piece from -> to
+5. if a capture was made, remove captured from the piece list
+6. Update fifty move rule, see if pawn was moved
+7. Promotions
+8. EnPas Captures
+9. Set Enpas square if PStart
+10. For all pieces added, moved removed, update all position counters, and piece lists
+11. maintain poskey
+12. don't forget castle permission
+13. change side, increment ply and hisPly

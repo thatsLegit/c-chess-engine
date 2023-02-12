@@ -95,8 +95,8 @@ void initHashKeys()
 {
     for (int i = 0; i < 13; i++)
     {
-        for (int i2 = 0; i2 < 120; i2++)
-            pieceKeys[i][i2] = RAND_64;
+        for (int j = 0; j < 120; j++)
+            pieceKeys[i][j] = RAND_64;
     }
 
     sideKey = RAND_64;

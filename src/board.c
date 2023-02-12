@@ -8,6 +8,8 @@
 #include "typedefs/hashkeys.h"
 #include "typedefs/data.h"
 
+bool isSquareOffBoard(int square, BOARD *pos) { return pos->pieces[square] == OFFBOARD; }
+
 // return value ranging from 0 to 7
 int squareFile(int square, const BOARD *pos)
 {
@@ -132,7 +134,7 @@ int parseFen(char *fen, BOARD *pos)
 
     assert(*fen == 'w' || *fen == 'b');
 
-    pos->side = *fen == 'w' ? WHITE : BLACK;
+    pos->side = (*fen == 'w') ? WHITE : BLACK;
     fen += 2;
 
     // castling permissions (KQkq)
@@ -165,6 +167,7 @@ int parseFen(char *fen, BOARD *pos)
 
     assert(pos->castlePerm >= 0 && pos->castlePerm <= 15);
 
+    // en passant square is set
     if (*fen != '-')
     {
         int file = *fen - 'a';
@@ -175,19 +178,10 @@ int parseFen(char *fen, BOARD *pos)
         assert(rank >= RANK_1 && rank <= RANK_8);
 
         pos->enPas = FR2SQ(file, rank);
-        fen++;
     }
-    fen += 2;
-
-    // not in the instructions for some reason...
-    pos->fiftyMove = *fen;
-    fen += 2;
-    pos->historyPly = *fen;
 
     pos->posKey = generatePosKey(pos);
-
     updateMaterialLists(pos);
-
     return 0;
 }
 
@@ -222,7 +216,7 @@ void updateMaterialLists(BOARD *pos)
             SET_BIT(pos->pawns[WHITE], SQ64(i));
         if (piece == bP)
             SET_BIT(pos->pawns[BLACK], SQ64(i));
-        if (piece == bP || piece == wP)
+        if (isPiecePawn[piece])
             SET_BIT(pos->pawns[BOTH], SQ64(i));
     }
 }
@@ -244,7 +238,7 @@ int checkBoard(const BOARD *pos)
     t_pawns[BLACK] = pos->pawns[BLACK];
     t_pawns[BOTH] = pos->pawns[BOTH];
 
-    // check piece lists
+    // check pos->pieceList is coherent with pos->pieces
     for (t_piece = wP; t_piece <= bK; ++t_piece)
     {
         for (t_piece_num = 0; t_piece_num < pos->pieceNum[t_piece]; ++t_piece_num)
@@ -275,7 +269,7 @@ int checkBoard(const BOARD *pos)
     for (t_piece = wP; t_piece <= bK; ++t_piece)
         assert(t_pieceNum[t_piece] == pos->pieceNum[t_piece]);
 
-    // check bitboards count
+    // check pawns count
     int pcount = COUNT(t_pawns[WHITE]);
     assert(pcount == pos->pieceNum[wP]);
     pcount = COUNT(t_pawns[BLACK]);
@@ -379,6 +373,6 @@ void printBoard(const BOARD *pos)
            pos->castlePerm & WKCA ? 'K' : '-',
            pos->castlePerm & WQCA ? 'Q' : '-',
            pos->castlePerm & BKCA ? 'k' : '-',
-           pos->castlePerm & WQCA ? 'q' : '-');
+           pos->castlePerm & BQCA ? 'q' : '-');
     printf("posKey: %llX\n", pos->posKey);
 }

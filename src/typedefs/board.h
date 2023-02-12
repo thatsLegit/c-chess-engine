@@ -1,6 +1,8 @@
 #ifndef BOARD_H
 #define BOARD_H
 
+#include <stdbool.h>
+
 // BOARD
 
 typedef unsigned long long U64;
@@ -22,7 +24,6 @@ enum { WHITE, BLACK, BOTH };
 typedef struct {
     /*
         Structure of a move:
-
         0000 0000 0000 0000 0000 0111 1111 -> from, 0x7F
         0000 0000 0000 0011 1111 1000 0000 -> to >> 7, 0x7F
         0000 0000 0011 1100 0000 0000 0000 -> captured piece >> 14, 0xF 
@@ -47,7 +48,7 @@ typedef struct {
 // retrieves the promoted piece id within a move of a MOVE_CMD
 #define PROMOTED_PIECE(move) ((move >> 20) & 0xF)
 
-// "read or write" flags; you can only have one of these in a move...
+// read or write from/to move flags; you can only have one of these in a move...
 // retrieves the en passant bool within a move of a MOVE_CMD
 #define EN_PASSANT 0x40000
 // retrieves the pawn start bool within a move of a MOVE_CMD
@@ -58,7 +59,7 @@ typedef struct {
 // "read only" flags
 // retrieves has any piece been captured bool within a move of a MOVE_CMD ?
 #define MOVE_CAPT_FLAG 0x7C000
-// retrieves has any piece been promoted bool within a move of a MOVE_CMD ? ?
+// retrieves has any piece been promoted bool within a move of a MOVE_CMD ?
 #define MOVE_PROM_FLAG 0xF00000
 
 typedef struct {
@@ -71,24 +72,27 @@ typedef struct {
     int count;
 } POTENTIAL_MOVE_LIST;
 
+// To understand the squares indexing, represent yourself the board as playing with white pieces
+// The indexes will be increasing from top left (A8) corner to bottom-right corner (H1)
+
 enum {
-    /* 0 -> 20 OutOfRange */
-    A8 = 21, B8, C8, D8, E8, F8, G8, H8, /* 29, 3O OOR */
-    A7 = 31, B7, C7, D7, E7, F7, G7, H7, /* 39, 4O OOR */
-    A6 = 41, B6, C6, D6, E6, F6, G6, H6, /* 49, 5O OOR */
-    A5 = 51, B5, C5, D5, E5, F5, G5, H5, /* 59, 6O OOR */
-    A4 = 61, B4, C4, D4, E4, F4, G4, H4, /* 69, 7O OOR */
-    A3 = 71, B3, C3, D3, E3, F3, G3, H3, /* 79, 8O OOR */
-    A2 = 81, B2, C2, D2, E2, F2, G2, H2, /* 89, 9O OOR */
-    A1 = 91, B1, C1, D1, E1, F1, G1, H1, NO_SQ, OFFBOARD /* 99 -> 120 OOR */
+    /* 0 -> 20 OFFBOARD */
+    A8 = 21, B8, C8, D8, E8, F8, G8, H8, /* 29, 3O OFFBOARD */
+    A7 = 31, B7, C7, D7, E7, F7, G7, H7, /* 39, 4O OFFBOARD */
+    A6 = 41, B6, C6, D6, E6, F6, G6, H6, /* 49, 5O OFFBOARD */
+    A5 = 51, B5, C5, D5, E5, F5, G5, H5, /* 59, 6O OFFBOARD */
+    A4 = 61, B4, C4, D4, E4, F4, G4, H4, /* 69, 7O OFFBOARD */
+    A3 = 71, B3, C3, D3, E3, F3, G3, H3, /* 79, 8O OFFBOARD */
+    A2 = 81, B2, C2, D2, E2, F2, G2, H2, /* 89, 9O OFFBOARD */
+    A1 = 91, B1, C1, D1, E1, F1, G1, H1, NO_SQ, OFFBOARD /* 99 -> 120 OFFBOARD */
 };
 
 // castling permissions
-// reminder: 1 => 1, 2 => 10, 4 => 100, 8 => 1000
+// reminder: 1 => 0001, 2 => 0010, 4 => 0100, 8 => 1000
 enum { WKCA = 1, WQCA = 2, BKCA = 4, BQCA = 8 };
 
 typedef struct {
-    int pieces[BRD_SQ_NUM]; /* array of piece index */
+    int pieces[BRD_SQ_NUM]; /* 120 index array, with OFFBOARD, EMPTY, or any piece as value */
 
     U64 pawns[3]; /* 64b => 8B: each B is a row, each b 1 if pawn of given color, 0 otherwise */
     int kingSq[2]; /* each king side's position */
@@ -117,10 +121,11 @@ typedef struct {
     int ply; /* how many half moves played in the current search */
     int historyPly; /* in the whole game, how many half moves played ? */
 
-    U64 posKey; /* unique key generated for each position */
+    U64 posKey; /* unique key generated for each position, 2 identical positions have the same key */
     MOVE_CMD history[MAX_GAME_MOVES];
 } BOARD;
 
+bool isSquareOffBoard(int square, BOARD *pos);
 int squareFile(int square, const BOARD *pos);
 int squareRank(int square, const BOARD *pos);
 void resetBoard(BOARD *pos);

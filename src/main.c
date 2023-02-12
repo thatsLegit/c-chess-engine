@@ -7,6 +7,7 @@
 #include "typedefs/init.h"
 #include "typedefs/io.h"
 #include "typedefs/movegen.h"
+#include "typedefs/move.h"
 
 #define FEN_0 "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
 #define FEN_WHITE_PAWN "rnbqkb1r/pp1p1pPp/8/2p1pP2/1P1P4/3P3P/P1P1P3/RNBQKBNR w KQkq e6 0 1"
@@ -24,13 +25,29 @@ int main()
     allInit();
 
     BOARD board;
-    parseFen(FINAL_FEN, &board);
-    printBoard(&board);
-    debugSquares();
-
     POTENTIAL_MOVE_LIST list;
+
+    parseFen(FINAL_FEN, &board);
     generateAllMoves(&board, &list);
-    printMoveList(&list, &board);
+
+    printBoard(&board);
+
+    for (int i = 0; i < list.count; i++)
+    {
+        int move = list.moves[i].move;
+        printf("iteration %d", i);
+
+        if (!makeMove(&board, move))
+            continue;
+
+        printBoard(&board);
+        printf("move: %s\n\n", printMove(move, &board));
+
+        takeMove(&board);
+
+        printBoard(&board);
+        printf("taken move: %s\n\n", printMove(move, &board));
+    }
 
     return 0;
 }

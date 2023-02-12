@@ -1,4 +1,5 @@
 #include <stdbool.h>
+#include <assert.h>
 
 #include "typedefs/attack.h"
 #include "typedefs/board.h"
@@ -12,7 +13,7 @@ const int KingDirection[8] = {-1, -10, 1, 10, -9, -11, 11, 9};
 
 bool isSquareAttacked(int square, int side, BOARD *pos)
 {
-    checkBoard(pos);
+    assert(checkBoard(pos));
 
     // pawns
     if (side == WHITE && (pos->pieces[square + 11] == wP || pos->pieces[square + 9] == wP))
@@ -24,7 +25,7 @@ bool isSquareAttacked(int square, int side, BOARD *pos)
     for (int i = 0; i < 8; i++)
     {
         int piece = pos->pieces[square + KnightDirection[i]];
-        if (isPieceKnight[piece] && pieceColor[piece] == side)
+        if (piece != OFFBOARD && isPieceKnight[piece] && pieceColor[piece] == side)
             return true;
     }
 
@@ -71,8 +72,8 @@ bool isSquareAttacked(int square, int side, BOARD *pos)
     // kings
     for (int i = 0; i < 8; i++)
     {
-        int piece = pos->pieces[square + KnightDirection[i]];
-        if (isPieceKnight[piece] && pieceColor[piece] == side)
+        int piece = pos->pieces[square + KingDirection[i]];
+        if (piece != OFFBOARD && isPieceKing[piece] && pieceColor[piece] == side)
             return true;
     }
 

@@ -35,26 +35,26 @@ const int pieceDirections[13][8] = {
 const int numDirections[13] = {0, 0, 8, 4, 4, 8, 8, 0, 8, 4, 4, 8, 8};
 
 // BOTH SIDES
-void addQuietMove(BOARD *pos, int move, POTENTIAL_MOVE_LIST *list)
+static void addQuietMove(BOARD *pos, int move, POTENTIAL_MOVE_LIST *list)
 {
     list->moves[list->count].move = move;
     list->moves[list->count].score = 0;
     list->count++;
 }
-void addCaptureMove(BOARD *pos, int move, POTENTIAL_MOVE_LIST *list)
+static void addCaptureMove(BOARD *pos, int move, POTENTIAL_MOVE_LIST *list)
 {
     list->moves[list->count].move = move;
     list->moves[list->count].score = 0;
     list->count++;
 }
-void addEnPassantMove(BOARD *pos, int move, POTENTIAL_MOVE_LIST *list)
+static void addEnPassantMove(BOARD *pos, int move, POTENTIAL_MOVE_LIST *list)
 {
     list->moves[list->count].move = move;
     list->moves[list->count].score = 0;
     list->count++;
 }
 
-void slidingPiecesMoves(BOARD *pos, POTENTIAL_MOVE_LIST *list, int side)
+static void slidingPiecesMoves(BOARD *pos, POTENTIAL_MOVE_LIST *list, int side)
 {
     int piece, pieceIdx = 0;
     pieceIdx = slidingPiecesIdx[side];
@@ -90,7 +90,7 @@ void slidingPiecesMoves(BOARD *pos, POTENTIAL_MOVE_LIST *list, int side)
     }
 }
 
-void nonSlidingPiecesMoves(BOARD *pos, POTENTIAL_MOVE_LIST *list, int side)
+static void nonSlidingPiecesMoves(BOARD *pos, POTENTIAL_MOVE_LIST *list, int side)
 {
     int piece, pieceIdx = 0;
     pieceIdx = nonSlidingPiecesIdx[side];
@@ -125,7 +125,7 @@ void nonSlidingPiecesMoves(BOARD *pos, POTENTIAL_MOVE_LIST *list, int side)
 }
 
 // WHITE
-void addWhitePawnCaptureMove(POTENTIAL_MOVE_LIST *list, BOARD *pos, int from, int to, int capture)
+static void addWhitePawnCaptureMove(POTENTIAL_MOVE_LIST *list, BOARD *pos, int from, int to, int capture)
 {
     if (squareRank(from, pos) == RANK_7)
     {
@@ -136,7 +136,7 @@ void addWhitePawnCaptureMove(POTENTIAL_MOVE_LIST *list, BOARD *pos, int from, in
     else
         addCaptureMove(pos, MOVE_FACTORY(from, to, capture, EMPTY, 0), list);
 }
-void addWhitePawnMove(POTENTIAL_MOVE_LIST *list, BOARD *pos, int from, int to)
+static void addWhitePawnMove(POTENTIAL_MOVE_LIST *list, BOARD *pos, int from, int to)
 {
     if (squareRank(from, pos) == RANK_7)
     {
@@ -148,12 +148,12 @@ void addWhitePawnMove(POTENTIAL_MOVE_LIST *list, BOARD *pos, int from, int to)
         addQuietMove(pos, MOVE_FACTORY(from, to, EMPTY, EMPTY, 0), list);
 }
 
-void whitePawnsMove(BOARD *pos, POTENTIAL_MOVE_LIST *list)
+static void whitePawnsMove(BOARD *pos, POTENTIAL_MOVE_LIST *list)
 {
     for (int i = 0; i < pos->pieceNum[wP]; i++)
     {
-        assert(squareFile(pos->pieceList[wP][i], pos) != OFFBOARD);
         int square = pos->pieceList[wP][i];
+        assert(!isSquareOffBoard(square, pos));
 
         // moving forward
         if (pos->pieces[square - 10] == EMPTY)
@@ -180,7 +180,7 @@ void whitePawnsMove(BOARD *pos, POTENTIAL_MOVE_LIST *list)
     }
 }
 
-void whiteSideCastling(BOARD *pos, POTENTIAL_MOVE_LIST *list)
+static void whiteSideCastling(BOARD *pos, POTENTIAL_MOVE_LIST *list)
 {
     // H1 rook and the king haven't moved yet
     // is the king (e1) attacked ?
@@ -193,7 +193,7 @@ void whiteSideCastling(BOARD *pos, POTENTIAL_MOVE_LIST *list)
         !isSquareAttacked(F1, BLACK, pos) &&
         !isSquareAttacked(G1, BLACK, pos))
     {
-        // no rook move wtf ?
+        // The rook move is done during move making
         addQuietMove(pos, MOVE_FACTORY(E1, G1, EMPTY, EMPTY, CASTLING), list);
     }
     if (pos->castlePerm & WQCA)
@@ -210,7 +210,7 @@ void whiteSideCastling(BOARD *pos, POTENTIAL_MOVE_LIST *list)
 }
 
 // BLACK
-void addBlackPawnCaptureMove(POTENTIAL_MOVE_LIST *list, BOARD *pos, int from, int to, int capture)
+static void addBlackPawnCaptureMove(POTENTIAL_MOVE_LIST *list, BOARD *pos, int from, int to, int capture)
 {
     if (squareRank(from, pos) == RANK_2)
     {
@@ -221,7 +221,7 @@ void addBlackPawnCaptureMove(POTENTIAL_MOVE_LIST *list, BOARD *pos, int from, in
     else
         addCaptureMove(pos, MOVE_FACTORY(from, to, capture, EMPTY, 0), list);
 }
-void addBlackPawnMove(POTENTIAL_MOVE_LIST *list, BOARD *pos, int from, int to)
+static void addBlackPawnMove(POTENTIAL_MOVE_LIST *list, BOARD *pos, int from, int to)
 {
     if (squareRank(from, pos) == RANK_2)
     {
@@ -233,12 +233,12 @@ void addBlackPawnMove(POTENTIAL_MOVE_LIST *list, BOARD *pos, int from, int to)
         addQuietMove(pos, MOVE_FACTORY(from, to, EMPTY, EMPTY, 0), list);
 }
 
-void blackPawnsMove(BOARD *pos, POTENTIAL_MOVE_LIST *list)
+static void blackPawnsMove(BOARD *pos, POTENTIAL_MOVE_LIST *list)
 {
     for (int i = 0; i < pos->pieceNum[bP]; i++)
     {
-        assert(squareFile(pos->pieceList[bP][i], pos) != OFFBOARD);
         int square = pos->pieceList[bP][i];
+        assert(!isSquareOffBoard(square, pos));
 
         // moving forward
         if (pos->pieces[square + 10] == EMPTY)
@@ -265,7 +265,7 @@ void blackPawnsMove(BOARD *pos, POTENTIAL_MOVE_LIST *list)
     }
 }
 
-void blackSideCastling(BOARD *pos, POTENTIAL_MOVE_LIST *list)
+static void blackSideCastling(BOARD *pos, POTENTIAL_MOVE_LIST *list)
 {
     if (pos->castlePerm & BKCA)
     {
@@ -293,7 +293,7 @@ void blackSideCastling(BOARD *pos, POTENTIAL_MOVE_LIST *list)
 
 void generateAllMoves(BOARD *pos, POTENTIAL_MOVE_LIST *list)
 {
-    checkBoard(pos);
+    assert(checkBoard(pos));
 
     list->count = 0;
     int side = pos->side;

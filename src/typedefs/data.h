@@ -15,6 +15,7 @@ int isPieceSliding[13];
 int pieceValue[13];
 int pieceColor[13];
 
+int isPiecePawn[13];
 int isPieceKnight[13];
 int isPieceKing[13];
 int isPieceRookOrQueen[13];
