@@ -10,10 +10,24 @@ int nonSlidingPiecesArr[6];
 int slidingPiecesArrIdx[2];
 int nonSlidingPiecesArrIdx[2];
 
+// BOTH SIDES
 void addQuietMove(BOARD *pos, int move, POTENTIAL_MOVE_LIST *list);
 void addCaptureMove(BOARD *pos, int move, POTENTIAL_MOVE_LIST *list);
 void addEnPassantMove(BOARD *pos, int move, POTENTIAL_MOVE_LIST *list);
+void slidingPiecesMoves(BOARD *pos, POTENTIAL_MOVE_LIST *list, int side);
+void nonSlidingPiecesMoves(BOARD *pos, POTENTIAL_MOVE_LIST *list, int side);
+
+// WHITE
 void addWhitePawnMove(POTENTIAL_MOVE_LIST *list, BOARD *pos, int from, int to);
+void addWhitePawnCaptureMove(POTENTIAL_MOVE_LIST *list, BOARD *pos, int from, int to, int capture);
+void whitePawnsMove(BOARD *pos, POTENTIAL_MOVE_LIST *list);
+void whiteSideCastling(BOARD *pos, POTENTIAL_MOVE_LIST *list);
+
+// BLACK
+void addBlackPawnMove(POTENTIAL_MOVE_LIST *list, BOARD *pos, int from, int to);
+void addBlackPawnCaptureMove(POTENTIAL_MOVE_LIST *list, BOARD *pos, int from, int to, int capture);
+void blackPawnsMove(BOARD *pos, POTENTIAL_MOVE_LIST *list);
+void blackSideCastling(BOARD *pos, POTENTIAL_MOVE_LIST *list);
 void generateAllMoves(BOARD *pos, POTENTIAL_MOVE_LIST *list);
 
 #endif
