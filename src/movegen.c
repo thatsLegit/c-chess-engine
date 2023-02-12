@@ -8,11 +8,11 @@
 #include "typedefs/attack.h"
 
 // some interesting data structure here...
-int slidingPieces[8] = {wB, wR, wQ, 0, bB, bR, bQ, 0};
-int nonSlidingPieces[6] = {wN, wK, 0, bN, bK, 0};
+const int slidingPieces[8] = {wB, wR, wQ, 0, bB, bR, bQ, 0};
+const int nonSlidingPieces[6] = {wN, wK, 0, bN, bK, 0};
 // idx: 0 white, idx: 1 black
-int slidingPiecesIdx[2] = {0, 4};
-int nonSlidingPiecesIdx[2] = {0, 3};
+const int slidingPiecesIdx[2] = {0, 4};
+const int nonSlidingPiecesIdx[2] = {0, 3};
 
 // every piece micro-movements (similar to what's in attack.c)
 const int pieceDirections[13][8] = {
@@ -134,9 +134,7 @@ void addWhitePawnCaptureMove(POTENTIAL_MOVE_LIST *list, BOARD *pos, int from, in
         addCaptureMove(pos, MOVE_FACTORY(from, to, capture, wK, 0), list);
     }
     else
-    {
         addCaptureMove(pos, MOVE_FACTORY(from, to, capture, EMPTY, 0), list);
-    }
 }
 void addWhitePawnMove(POTENTIAL_MOVE_LIST *list, BOARD *pos, int from, int to)
 {
@@ -147,9 +145,7 @@ void addWhitePawnMove(POTENTIAL_MOVE_LIST *list, BOARD *pos, int from, int to)
         addQuietMove(pos, MOVE_FACTORY(from, to, EMPTY, wK, 0), list);
     }
     else
-    {
         addQuietMove(pos, MOVE_FACTORY(from, to, EMPTY, EMPTY, 0), list);
-    }
 }
 
 void whitePawnsMove(BOARD *pos, POTENTIAL_MOVE_LIST *list)
@@ -223,9 +219,7 @@ void addBlackPawnCaptureMove(POTENTIAL_MOVE_LIST *list, BOARD *pos, int from, in
         addCaptureMove(pos, MOVE_FACTORY(from, to, capture, bK, 0), list);
     }
     else
-    {
         addCaptureMove(pos, MOVE_FACTORY(from, to, capture, EMPTY, 0), list);
-    }
 }
 void addBlackPawnMove(POTENTIAL_MOVE_LIST *list, BOARD *pos, int from, int to)
 {
@@ -236,9 +230,7 @@ void addBlackPawnMove(POTENTIAL_MOVE_LIST *list, BOARD *pos, int from, int to)
         addQuietMove(pos, MOVE_FACTORY(from, to, EMPTY, bK, 0), list);
     }
     else
-    {
         addQuietMove(pos, MOVE_FACTORY(from, to, EMPTY, EMPTY, 0), list);
-    }
 }
 
 void blackPawnsMove(BOARD *pos, POTENTIAL_MOVE_LIST *list)

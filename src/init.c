@@ -74,9 +74,7 @@ void debugSquares()
     for (int i = 0; i < BRD_SQ_NUM; i++)
     {
         if (i % 10 == 0)
-        {
             printf("\n");
-        }
         printf("%5d", Sq120ToSq64[i]);
     }
 
@@ -86,9 +84,7 @@ void debugSquares()
     for (int i = 0; i < 64; i++)
     {
         if (i % 8 == 0)
-        {
             printf("\n");
-        }
         printf("%5d", Sq64ToSq120[i]);
     }
 
@@ -100,15 +96,13 @@ void initHashKeys()
     for (int i = 0; i < 13; i++)
     {
         for (int i2 = 0; i2 < 120; i2++)
-        {
             pieceKeys[i][i2] = RAND_64;
-        }
     }
+
     sideKey = RAND_64;
+
     for (int i = 0; i < 16; i++)
-    {
         castleKeys[i] = RAND_64;
-    }
 }
 
 void allInit()

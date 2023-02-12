@@ -122,9 +122,7 @@ int parseFen(char *fen, BOARD *pos)
             sq120 = SQ120(sq64);
             // we have a piece
             if (piece != EMPTY)
-            {
                 pos->pieces[sq120] = piece;
-            }
             // if empty squares only, we go the the next piece.
             file++;
         }
@@ -221,9 +219,7 @@ void updateMaterialLists(BOARD *pos)
             pos->kingSq[WHITE] = i;
 
         if (piece == wP)
-        {
             SET_BIT(pos->pawns[WHITE], SQ64(i));
-        }
         if (piece == bP)
             SET_BIT(pos->pawns[BLACK], SQ64(i));
         if (piece == bP || piece == wP)
@@ -329,17 +325,11 @@ void resetBoard(BOARD *pos)
     pos->kingSq[BLACK] = pos->kingSq[WHITE] = NO_SQ;
 
     for (int i = 0; i < BRD_SQ_NUM; i++)
-    {
         pos->pieces[i] = OFFBOARD;
-    }
     for (int i = 0; i < 64; i++)
-    {
         pos->pieces[SQ120(i)] = EMPTY;
-    }
     for (int i = 0; i < 3; i++)
-    {
         pos->pawns[i] = 0ULL;
-    }
     for (int i = 0; i < 2; i++)
     {
         pos->bigPieceNum[i] = 0;
@@ -348,9 +338,7 @@ void resetBoard(BOARD *pos)
         pos->material[i] = 0;
     }
     for (int i = 0; i < 13; i++)
-    {
         pos->pieceNum[i] = 0;
-    }
 
     pos->side = BOTH;
     pos->enPas = NO_SQ;
@@ -380,10 +368,10 @@ void printBoard(const BOARD *pos)
     }
 
     printf("\n  ");
+
     for (int file = FILE_A; file <= FILE_H; file++)
-    {
         printf("%3c", file + 'a');
-    }
+
     printf("\n\n");
     printf("side: %c\n", sideChar[pos->side]);
     printf("En passant: %d\n", pos->enPas);

@@ -16,13 +16,9 @@ bool isSquareAttacked(int square, int side, BOARD *pos)
 
     // pawns
     if (side == WHITE && (pos->pieces[square + 11] == wP || pos->pieces[square + 9] == wP))
-    {
         return true;
-    }
     if (side == BLACK && (pos->pieces[square - 11] == bP || pos->pieces[square - 9] == bP))
-    {
         return true;
-    }
 
     // knights
     for (int i = 0; i < 8; i++)

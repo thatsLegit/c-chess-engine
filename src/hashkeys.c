@@ -21,9 +21,7 @@ U64 generatePosKey(const BOARD *pos)
 
     // if it's white turn to play, hash in the side key
     if (pos->side == WHITE)
-    {
         finalKey ^= sideKey;
-    }
 
     if (pos->enPas != NO_SQ)
     {

@@ -40,9 +40,7 @@ void printBitBoard(U64 bb)
     U64 shiftMe = 1ULL;
 
     for (int i = 0; i < 8; i++)
-    {
         printf("%3c", files[i]);
-    }
 
     for (int rank = RANK_8; rank >= RANK_1; rank--)
     {
@@ -55,13 +53,9 @@ void printBitBoard(U64 bb)
             int sq64 = SQ64(sq120);
 
             if ((shiftMe << sq64) & bb)
-            {
                 printf("%3c", 'X');
-            }
             else
-            {
                 printf("%3c", '-');
-            }
         }
     }
 
