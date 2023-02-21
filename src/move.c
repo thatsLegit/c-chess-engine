@@ -1,4 +1,7 @@
 #include <assert.h>
+#include <stdlib.h>
+#include <setjmp.h>
+#include <stdio.h>
 
 #include "typedefs/move.h"
 #include "typedefs/hashkeys.h"
@@ -40,6 +43,7 @@ static void clearPiece(const int square, BOARD *pos)
     int color = pieceColor[piece];
     HASH_PIECE(piece, square);
 
+    pos->pieces[square] = EMPTY;
     pos->material[color] -= pieceValue[piece];
 
     if (isPieceBig[piece])
@@ -67,7 +71,8 @@ static void clearPiece(const int square, BOARD *pos)
         }
     }
 
-    assert(t_pieceNum != -1 && t_pieceNum >= 0 && t_pieceNum < 10);
+    assert(t_pieceNum != -1);
+    assert(t_pieceNum >= 0 && t_pieceNum < 10);
 
     // last element from pos->pieceList[piece], just set it to 0
     if (t_pieceNum == numberOfSamePieces - 1)
@@ -116,10 +121,6 @@ static void movePiece(const int from, const int to, BOARD *pos)
     int piece = pos->pieces[from];
     int color = pieceColor[piece];
 
-#ifdef DEBUG
-    int t_pieceNum = false;
-#endif
-
     // hash out from and hash in to
     HASH_PIECE(piece, from);
     pos->pieces[from] = EMPTY;
@@ -141,17 +142,9 @@ static void movePiece(const int from, const int to, BOARD *pos)
         if (pos->pieceList[piece][i] == from)
         {
             pos->pieceList[piece][i] = to;
-#ifdef DEBUG
-            int t_pieceNum = true;
-#endif
             break;
         }
     }
-
-#ifdef DEBUG
-    assert(t_pieceNum);
-
-#endif
 }
 
 void takeMove(BOARD *pos)
@@ -248,8 +241,7 @@ bool makeMove(BOARD *pos, int move)
     if (move & EN_PASSANT)
     {
         // If the move is an EP, we need to remove the pawn that is just "behind" the EP square
-        int pawnToClearOutSquare = side == WHITE ? to + 10 : to - 10;
-        clearPiece(pawnToClearOutSquare, pos);
+        side == WHITE ? clearPiece(to + 10, pos) : clearPiece(to - 10, pos);
     }
     else if (move & CASTLING)
     {
@@ -288,7 +280,8 @@ bool makeMove(BOARD *pos, int move)
     pos->historyPly++;
     pos->fiftyMove++;
 
-    if (move & MOVE_CAPT_FLAG)
+    // not using the any capture flag as en passant move would go in here too, trying to clear the same pawn twice
+    if (CAPT_PIECE(move))
     {
         clearPiece(to, pos);
         pos->fiftyMove = 0;
