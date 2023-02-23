@@ -1,8 +1,8 @@
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 
-#include "typedefs/board.h"
 #include "typedefs/bitboards.h"
+#include "typedefs/board.h"
 #include "typedefs/hashkeys.h"
 
 /*
@@ -35,13 +35,11 @@
 
 void initBitMasks()
 {
-    for (int i = 0; i < 64; i++)
-    {
+    for (int i = 0; i < 64; i++) {
         setMask[i] = 0ULL;
         clearMask[i] = 0ULL;
     }
-    for (int i = 0; i < 64; i++)
-    {
+    for (int i = 0; i < 64; i++) {
         setMask[i] = (1ULL << i);
         clearMask[i] = ~setMask[i];
     }
@@ -49,18 +47,15 @@ void initBitMasks()
 
 void initSquares()
 {
-    for (int i = 0; i < BRD_SQ_NUM; i++)
-    {
+    for (int i = 0; i < BRD_SQ_NUM; i++) {
         Sq120ToSq64[i] = 64;
     }
 
     int sq;
     int sq64 = 0;
 
-    for (int rank = RANK_1; rank < RANK_NONE; rank++)
-    {
-        for (int file = FILE_A; file < FILE_NONE; file++)
-        {
+    for (int rank = RANK_1; rank < RANK_NONE; rank++) {
+        for (int file = FILE_A; file < FILE_NONE; file++) {
             sq = FR2SQ(file, rank);
             Sq64ToSq120[sq64] = sq;
             Sq120ToSq64[sq] = sq64;
@@ -71,20 +66,16 @@ void initSquares()
 
 void debugSquares()
 {
-    for (int i = 0; i < BRD_SQ_NUM; i++)
-    {
-        if (i % 10 == 0)
-            printf("\n");
+    for (int i = 0; i < BRD_SQ_NUM; i++) {
+        if (i % 10 == 0) printf("\n");
         printf("%5d", Sq120ToSq64[i]);
     }
 
     printf("\n");
     printf("\n");
 
-    for (int i = 0; i < 64; i++)
-    {
-        if (i % 8 == 0)
-            printf("\n");
+    for (int i = 0; i < 64; i++) {
+        if (i % 8 == 0) printf("\n");
         printf("%5d", Sq64ToSq120[i]);
     }
 
@@ -93,16 +84,17 @@ void debugSquares()
 
 void initHashKeys()
 {
-    for (int i = 0; i < 13; i++)
-    {
-        for (int j = 0; j < 120; j++)
+    for (int i = 0; i < 13; i++) {
+        for (int j = 0; j < 120; j++) {
             pieceKeys[i][j] = RAND_64;
+        }
     }
 
     sideKey = RAND_64;
 
-    for (int i = 0; i < 16; i++)
+    for (int i = 0; i < 16; i++) {
         castleKeys[i] = RAND_64;
+    }
 }
 
 void allInit()

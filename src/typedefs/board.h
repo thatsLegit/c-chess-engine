@@ -3,13 +3,9 @@
 
 #include <stdbool.h>
 
-// BOARD
-
 typedef unsigned long long U64;
 
-#define NAME "Vice 1.0"
 #define BRD_SQ_NUM 120
-
 #define MAX_GAME_MOVES 2048
 #define MAX_POSITION_MOVES 256
 

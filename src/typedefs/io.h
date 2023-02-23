@@ -3,8 +3,10 @@
 
 #include "board.h"
 
-char *printSquare(int square, BOARD *pos);
-char *printMove(int move, BOARD *pos);
-void printMoveList(POTENTIAL_MOVE_LIST *list, BOARD *pos);
+char *printRank(int square, const BOARD *pos);
+char *printFile(int square, const BOARD *pos);
+char *printSquare(int square, const BOARD *pos);
+char *printMove(int move, const BOARD *pos);
+void printMoveList(POTENTIAL_MOVE_LIST *list, const BOARD *pos);
 
 #endif

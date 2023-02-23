@@ -1,13 +1,13 @@
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <assert.h>
 
 #include "typedefs/board.h"
 #include "typedefs/init.h"
 #include "typedefs/io.h"
 #include "typedefs/perft.h"
 
-#define PERFT_FEN "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+#define PERFT_FEN "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1"
 
 int main()
 {
@@ -16,7 +16,7 @@ int main()
     BOARD board;
 
     parseFen(PERFT_FEN, &board);
-    printf("\nNumber of leaf nodes: %d\n", runPerfTesting(5, &board));
+    printf("\nNumber of leaf nodes: %d\n", runPerfTesting(4, &board));
 
     return 0;
 }

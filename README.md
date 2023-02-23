@@ -18,6 +18,4 @@ be activated. This is equivalent to throwing errors in any other higher level la
 
 Next steps:
 
-- implement the assert and debug macros
-- go further by implementing a try/catch logic to understand the current bug
 - set up github actions to run perf tests

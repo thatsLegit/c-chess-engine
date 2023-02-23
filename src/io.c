@@ -5,7 +5,21 @@
 #include "typedefs/data.h"
 #include "typedefs/io.h"
 
-char *printSquare(int square, BOARD *pos)
+char *printRank(int square, const BOARD *pos)
+{
+    static char sqStr[3];
+    sprintf(sqStr, "%c", '1' + squareRank(square, pos));
+    return sqStr;
+}
+
+char *printFile(int square, const BOARD *pos)
+{
+    static char sqStr[3];
+    sprintf(sqStr, "%c", 'a' + squareFile(square, pos));
+    return sqStr;
+}
+
+char *printSquare(int square, const BOARD *pos)
 {
     static char sqStr[3];
 
@@ -18,7 +32,7 @@ char *printSquare(int square, BOARD *pos)
 }
 
 // 1st parameter move comes from POTENTIAL_MOVE or MOVE_CMD
-char *printMove(int move, BOARD *pos)
+char *printMove(int move, const BOARD *pos)
 {
     static char moveStr[6];
 
@@ -29,12 +43,10 @@ char *printMove(int move, BOARD *pos)
 
     int promoted = PROMOTED_PIECE(move);
 
-    if (!promoted)
-    {
+    if (!promoted) {
         sprintf(moveStr, "%c%c%c%c", 'a' + fileFrom, '1' + rankFrom, 'a' + fileTo, '1' + rankTo);
     }
-    else
-    {
+    else {
         char pchar = 'q';
 
         if (isPieceKnight[promoted])
@@ -50,10 +62,9 @@ char *printMove(int move, BOARD *pos)
     return moveStr;
 }
 
-void printMoveList(POTENTIAL_MOVE_LIST *list, BOARD *pos)
+void printMoveList(POTENTIAL_MOVE_LIST *list, const BOARD *pos)
 {
-    for (int i = 0; i < list->count; i++)
-    {
+    for (int i = 0; i < list->count; i++) {
         int score = list->moves[i].score;
         int move = list->moves[i].move;
 
