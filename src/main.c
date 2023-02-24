@@ -15,8 +15,7 @@ int main()
 
     BOARD board;
 
-    parseFen(PERFT_FEN, &board);
-    printf("\nNumber of leaf nodes: %d\n", runPerfTesting(4, &board));
+    largeScaleTesting(&board);
 
     return 0;
 }
