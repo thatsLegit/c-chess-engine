@@ -32,7 +32,7 @@ int runPerfTesting(int depth, BOARD *pos)
 }
 
 // Mutates fen and tests
-void parseLine(char *line, char *fen, char **tests)
+static void parseLine(char *line, char *fen, char **tests)
 {
     char *token;
     int testIndex = 0;
@@ -46,7 +46,7 @@ void parseLine(char *line, char *fen, char **tests)
     }
 }
 
-void processLine(BOARD *pos, char *line, char *fen, char **tests, int *totalErrors)
+static void processLine(BOARD *pos, char *line, char *fen, char **tests, int *totalErrors)
 {
     parseLine(line, fen, tests);
 
@@ -72,7 +72,7 @@ void processLine(BOARD *pos, char *line, char *fen, char **tests, int *totalErro
 void largeScaleTesting(BOARD *pos)
 {
     FILE *ptr;
-    ptr = fopen("/Users/stepanov/Dev/c/c-chess-engine/docs/perftsuite.epd", "r");
+    ptr = fopen("/Users/iljastepanov/dev/c/chess-engine/docs/perftsuite.epd", "r");
     if (ptr == NULL) printf("Error: %s\n", strerror(errno));
 
     int totalErrors = 0, totalLines = 0, lineSize = 0;

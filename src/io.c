@@ -1,9 +1,14 @@
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
+#include "typedefs/bitboards.h"
 #include "typedefs/board.h"
 #include "typedefs/data.h"
 #include "typedefs/io.h"
+#include "typedefs/move.h"
+#include "typedefs/utils.h"
 
 char *printRank(int square, const BOARD *pos)
 {
@@ -70,4 +75,39 @@ void printMoveList(POTENTIAL_MOVE_LIST *list, const BOARD *pos)
 
         printf("move:%d > %s score: %d\n", i + 1, printMove(move, pos), score);
     }
+}
+
+int parseMove(char *s, BOARD *pos, POTENTIAL_MOVE_LIST *list)
+{
+    ASSERT(strlen(s) < 7);
+    if (s[0] < 'a' || s[0] > 'h' || s[2] < 'a' || s[2] > 'h' || s[1] < '1' || s[1] > '8' || s[3] < '1' || s[3] > '8') return NOMOVE;
+
+    int from = FR2SQ(s[0] - 'a', s[1] - '1');
+    int to = FR2SQ(s[2] - 'a', s[3] - '1');
+
+    ASSERT(!isSquareOffBoard(from, pos));
+    ASSERT(!isSquareOffBoard(to, pos));
+    printf("from: %d, to: %d", from, to);
+
+    for (int i = 0; i < list->count; i++) {
+        int move = list->moves[i].move;
+        if (from == FROM_SQ(move) && to == TO_SQ(move)) {
+            int promotion = PROMOTED_PIECE(move);
+            if (promotion == EMPTY) return move;
+
+            bool truthTable[4] = {isPieceRookOrQueen[promotion] && !isPieceBishopOrQueen[promotion] && s[4] == 'r',
+                                  !isPieceRookOrQueen[promotion] && isPieceBishopOrQueen[promotion] && s[4] == 'b',
+                                  isPieceRookOrQueen[promotion] && isPieceBishopOrQueen[promotion] && s[4] == 'q',
+                                  isPieceKnight[promotion] && s[4] == 'n'};
+
+            for (int j = 0; j < 4; j++) {
+                if (truthTable[j]) return move;
+                if (j == 3) continue;
+            }
+
+            return move;
+        }
+    }
+
+    return NOMOVE;
 }

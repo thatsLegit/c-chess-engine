@@ -11,6 +11,8 @@
 #define HASH_SIDE (pos->posKey ^= (sideKey))
 #define HASH_EP (pos->posKey ^= pieceKeys[(EMPTY)][(pos->enPas)])
 
+#define NOMOVE 0
+
 void takeMove(BOARD *pos);
 bool makeMove(BOARD *pos, int move);
 
