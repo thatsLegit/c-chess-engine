@@ -1,6 +1,7 @@
 #include "typedefs/perft.h"
 #include "typedefs/board.h"
 #include "typedefs/io.h"
+#include "typedefs/misc.h"
 #include "typedefs/move.h"
 #include "typedefs/movegen.h"
 #include "typedefs/utils.h"
@@ -71,8 +72,8 @@ static void processLine(BOARD *pos, char *line, char *fen, char **tests, int *to
 
 void largeScaleTesting(BOARD *pos)
 {
-    FILE *ptr;
-    ptr = fopen("/Users/iljastepanov/dev/c/chess-engine/docs/perftsuite.epd", "r");
+    int time = getTimeMs();
+    FILE *ptr = fopen("/Users/stepanov/Dev/c/c-chess-engine/docs/perftsuite.epd", "r");
     if (ptr == NULL) printf("Error: %s\n", strerror(errno));
 
     int totalErrors = 0, totalLines = 0, lineSize = 0;
@@ -80,9 +81,9 @@ void largeScaleTesting(BOARD *pos)
     char line[MAX_LINE_SIZE] = "";
     char fen[MAX_FEN_SIZE] = "";
     char **tests = malloc(sizeof(char *) * MAX_DEPTH);
+
     for (int i = 0; i < MAX_DEPTH; i++)
         tests[i] = malloc(sizeof(char) * MAX_TEST_SIZE);
-
     do {
         ch = fgetc(ptr);
 
@@ -101,5 +102,5 @@ void largeScaleTesting(BOARD *pos)
 
     fclose(ptr);
     free(tests);
-    printf("Total number of errors: %d\n", totalErrors);
+    printf("Test executed in %ds. Total number of errors: %d\n", (getTimeMs() - time) / 1000, totalErrors);
 }

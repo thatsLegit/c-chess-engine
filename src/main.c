@@ -16,35 +16,9 @@ int main()
 {
     allInit();
     BOARD board;
-    POTENTIAL_MOVE_LIST list;
     parseFen(PERFT_FEN, &board);
 
-    char input[6] = "";
-
-    while (true) {
-        printBoard(&board);
-        generateAllMoves(&board, &list);
-
-        printf("Please enter the move > ");
-        fgets(input, 6, stdin);
-
-        if (input[0] == 'q')
-            break;
-        else if (input[0] == 't')
-            takeMove(&board);
-        else {
-            int move = parseMove(input, &board, &list);
-            if (move != NOMOVE) {
-                makeMove(&board, move);
-                if (isRepetition(&board)) printf("Move is repeated.\n");
-            }
-            else {
-                printf("Move not found.\n");
-            }
-        }
-
-        fflush(stdin);
-    }
+    largeScaleTesting(&board);
 
     return 0;
 }
