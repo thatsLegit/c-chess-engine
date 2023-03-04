@@ -87,7 +87,6 @@ int parseMove(char *s, BOARD *pos, POTENTIAL_MOVE_LIST *list)
 
     ASSERT(!isSquareOffBoard(from, pos));
     ASSERT(!isSquareOffBoard(to, pos));
-    printf("from: %d, to: %d", from, to);
 
     for (int i = 0; i < list->count; i++) {
         int move = list->moves[i].move;

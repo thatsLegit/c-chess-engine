@@ -1,9 +1,0 @@
-{
-  "files.associations": {
-    "*.html.erb": "erb",
-    "*.erb": "html",
-    "stdlib.h": "c",
-    "stdio.h": "c",
-    "board.h": "c"
-  }
-}
