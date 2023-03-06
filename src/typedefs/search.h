@@ -4,7 +4,8 @@
 #include "board.h"
 #include <stdbool.h>
 
-void searchPosition(const BOARD *pos);
+void clearPvTable(PVE_TABLE *table);
+void initPVTable(PVE_TABLE *table);
 bool isRepetition(const BOARD *pos);
 
 #endif

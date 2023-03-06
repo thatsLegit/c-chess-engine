@@ -3,6 +3,7 @@
 #include "typedefs/data.h"
 #include "typedefs/hashkeys.h"
 #include "typedefs/io.h"
+#include "typedefs/search.h"
 #include "typedefs/utils.h"
 #include <assert.h>
 #include <stdbool.h>
@@ -310,6 +311,8 @@ void resetBoard(BOARD *pos)
     pos->historyPly = 0;
     pos->castlePerm = 0;
     pos->posKey = 0ULL;
+    pos->pvTable = malloc(sizeof(PVE_TABLE));
+    initPVTable(pos->pvTable);
 }
 
 void printBoard(const BOARD *pos)

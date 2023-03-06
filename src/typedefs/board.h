@@ -66,6 +66,19 @@ typedef struct {
     int count;
 } POTENTIAL_MOVE_LIST;
 
+// Principal variation entry.
+// The principal variation represents the top line identified by the engine
+typedef struct {
+    U64 posKey;
+    int move;
+} PV_ENTRY;
+
+// Principal variation table, representing the top line identified by the engine
+typedef struct {
+    PV_ENTRY *data;
+    int numEntries;
+} PVE_TABLE;
+
 // To understand the squares indexing, represent yourself the board as playing with white pieces
 // The indexes will be increasing from top left (A8) corner to bottom-right corner (H1)
 
@@ -85,7 +98,7 @@ enum {
 // reminder: 1 => 0001, 2 => 0010, 4 => 0100, 8 => 1000
 enum { WKCA = 1, WQCA = 2, BKCA = 4, BQCA = 8 };
 
-typedef struct {
+typedef struct BOARD {
     int pieces[BRD_SQ_NUM]; /* 120 index array, with OFFBOARD, EMPTY, or any piece as value */
 
     U64 pawns[3]; /* 64b => 8B: each B is a row, each b 1 if pawn of given color, 0 otherwise */
@@ -117,6 +130,7 @@ typedef struct {
 
     U64 posKey; /* unique key generated for each position, 2 identical positions have the same key */
     MOVE_CMD history[MAX_GAME_MOVES];
+    PVE_TABLE* pvTable;
 } BOARD;
 
 bool isSquareOffBoard(int square, BOARD *pos);
