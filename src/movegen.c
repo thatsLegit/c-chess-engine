@@ -3,8 +3,10 @@
 #include "typedefs/board.h"
 #include "typedefs/data.h"
 #include "typedefs/io.h"
+#include "typedefs/move.h"
 #include "typedefs/utils.h"
 #include <assert.h>
+#include <stdbool.h>
 #include <stdlib.h>
 
 // some interesting data structure here...
@@ -290,4 +292,19 @@ void generateAllMoves(BOARD *pos, POTENTIAL_MOVE_LIST *list)
 
     slidingPiecesMoves(pos, list, side);
     nonSlidingPiecesMoves(pos, list, side);
+}
+
+bool moveExists(BOARD *pos, int move)
+{
+    POTENTIAL_MOVE_LIST list;
+    generateAllMoves(pos, &list);
+
+    for (int i = 0; i < list.count; i++) {
+        if (list.moves[i].move != move) continue;
+        if (!makeMove(pos, list.moves[i].move)) continue;
+        takeMove(pos);
+        return true;
+    }
+
+    return false;
 }

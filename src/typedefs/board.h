@@ -8,6 +8,7 @@ typedef unsigned long long U64;
 #define BRD_SQ_NUM 120
 #define MAX_GAME_MOVES 2048
 #define MAX_POSITION_MOVES 256
+#define MAX_DEPTH 64
 
 enum { EMPTY, wP, wN, wB, wR, wQ, wK, bP, bN, bB, bR, bQ, bK };
 enum { FILE_A, FILE_B, FILE_C, FILE_D, FILE_E, FILE_F, FILE_G, FILE_H, FILE_NONE };
@@ -130,7 +131,9 @@ typedef struct BOARD {
 
     U64 posKey; /* unique key generated for each position, 2 identical positions have the same key */
     MOVE_CMD history[MAX_GAME_MOVES];
-    PVE_TABLE* pvTable;
+
+    PVE_TABLE* pvTable; /* principal variation table */
+    int pvArray[MAX_DEPTH]; /* principal variation array */
 } BOARD;
 
 bool isSquareOffBoard(int square, BOARD *pos);
