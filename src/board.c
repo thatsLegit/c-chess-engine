@@ -12,28 +12,18 @@
 
 bool isSquareOffBoard(int square, BOARD *pos) { return pos->pieces[square] == OFFBOARD; }
 
-// return value ranging from 0 to 7
 int squareFile(int square, const BOARD *pos)
 {
     if (pos->pieces[square] == OFFBOARD) return OFFBOARD;
     return (square % 10) - 1;
 }
 
-// return value ranging from 0 to 7
 int squareRank(int square, const BOARD *pos)
 {
     if (pos->pieces[square] == OFFBOARD) return OFFBOARD;
     return 9 - (square / 10);
 }
 
-// Mutates the board according to the given fen notation
-// "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
-// 1st part of the sequence is all the rows separated by /. Letter => piece, number => empty square
-// 2nd part is for the side
-// 3rd part is for castling permissions
-// 4th part is - or any square [E3/...] and is for en passant
-// 5th part is for fifty move rule
-// 6th part is for the number of full turns played
 int parseFen(char *fen, BOARD *pos)
 {
     ASSERT(fen != NULL);

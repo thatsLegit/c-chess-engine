@@ -80,6 +80,21 @@ typedef struct {
     int numEntries;
 } PVE_TABLE;
 
+typedef struct {
+    int starttime;
+    int stoptime;
+    int depth;
+    int depthset;
+    int timeset;
+    int movestogo;
+
+    long nodes;
+
+    bool infinite;
+    bool quit;
+    bool stopped;
+} SEARCH_INFO;
+
 // To understand the squares indexing, represent yourself the board as playing with white pieces
 // The indexes will be increasing from top left (A8) corner to bottom-right corner (H1)
 
@@ -134,12 +149,31 @@ typedef struct BOARD {
 
     PVE_TABLE* pvTable; /* principal variation table */
     int pvArray[MAX_DEPTH]; /* principal variation array */
+
+    // Next two arrays are used for ordering moves, which is critical.
+    // Stores non-capture moves only.
+    // Get reset on each new search.
+    // Everytime a move improves on alpha, for that piece type and its "to" square, 
+    // we will increment this array. 
+    int searchHistory[13][BRD_SQ_NUM];
+    // Stores the 2 moves that the most recently caused beta-cutoffs
+    int searchKillers[2][BRD_SQ_NUM];
 } BOARD;
 
 bool isSquareOffBoard(int square, BOARD *pos);
+// return value ranging from 0 to 7
 int squareFile(int square, const BOARD *pos);
+// return value ranging from 0 to 7
 int squareRank(int square, const BOARD *pos);
 void resetBoard(BOARD *pos);
+// Mutates the board according to the given fen notation
+// "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+// 1st part of the sequence is all the rows separated by /. Letter => piece, number => empty square
+// 2nd part is for the side
+// 3rd part is for castling permissions
+// 4th part is - or any square [E3/...] and is for en passant
+// 5th part is for fifty move rule
+// 6th part is for the number of full turns played
 int parseFen(char *fen, BOARD *pos);
 void printBoard(const BOARD* pos);
 void updateMaterialLists(BOARD* pos);

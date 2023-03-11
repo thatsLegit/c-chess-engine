@@ -1,8 +1,8 @@
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 
-#include "typedefs/board.h"
 #include "typedefs/bitboards.h"
+#include "typedefs/board.h"
 
 // solution from https://www.chessprogramming.org/Looking_for_Magics
 
@@ -32,7 +32,6 @@ int countBits(U64 bb)
 char files[8] = "ABCDEFGH";
 char ranks[8] = "12345678";
 
-// Currently bitboards are only used for pawns
 void printBitBoard(U64 bb)
 {
     printf("\n ");
@@ -42,13 +41,11 @@ void printBitBoard(U64 bb)
     for (int i = 0; i < 8; i++)
         printf("%3c", files[i]);
 
-    for (int rank = RANK_8; rank >= RANK_1; rank--)
-    {
+    for (int rank = RANK_8; rank >= RANK_1; rank--) {
         printf("\n");
         printf("%c", ranks[rank]);
 
-        for (int file = FILE_A; file < FILE_NONE; file++)
-        {
+        for (int file = FILE_A; file < FILE_NONE; file++) {
             int sq120 = FR2SQ(file, rank);
             int sq64 = SQ64(sq120);
 

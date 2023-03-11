@@ -36,7 +36,6 @@ char *printSquare(int square, const BOARD *pos)
     return sqStr;
 }
 
-// 1st parameter move comes from POTENTIAL_MOVE or MOVE_CMD
 char *printMove(int move, const BOARD *pos)
 {
     static char moveStr[6];

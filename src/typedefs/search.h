@@ -4,6 +4,6 @@
 #include "board.h"
 #include <stdbool.h>
 
-bool isRepetition(const BOARD *pos);
+void searchPosition(BOARD *pos, SEARCH_INFO *info);
 
 #endif

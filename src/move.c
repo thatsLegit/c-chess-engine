@@ -207,8 +207,6 @@ void takeMove(BOARD *pos)
     ASSERT(checkBoard(pos));
 }
 
-// the returned boolean indicates whether the move is actually legal:
-// if the king is in check, the move cannot be played.
 bool makeMove(BOARD *pos, int move)
 {
     int side = pos->side;

@@ -38,8 +38,6 @@ void initPVTable(PVE_TABLE *table)
     printf("pv table has been initialized with %d entries\n", table->numEntries);
 }
 
-// Build the principal variation array (pvArray) by getting the best move to play on each
-// new move until reaching the depth or the MAX_DEPTH or illegal move is made.
 int getPvLine(const int depth, BOARD *pos)
 {
     ASSERT(depth < MAX_DEPTH);
@@ -68,8 +66,6 @@ int getPvLine(const int depth, BOARD *pos)
     return count;
 }
 
-// It's possible that index is repeated for 2 different moves:
-// uniqueness is not guaranted so far.
 void storePvMove(const BOARD *pos, const int move)
 {
     int index = pos->posKey % pos->pvTable->numEntries;
@@ -79,7 +75,6 @@ void storePvMove(const BOARD *pos, const int move)
     pos->pvTable->data[index].posKey = pos->posKey;
 }
 
-// Retrieves the move from an entry in the pvTable
 int probePvMove(const BOARD *pos)
 {
     int index = pos->posKey % pos->pvTable->numEntries;

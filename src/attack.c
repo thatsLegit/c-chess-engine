@@ -12,8 +12,6 @@ const int RookDirection[4] = {-1, -10, 1, 10};
 const int BishopDirection[4] = {-9, -11, 11, 9};
 const int KingDirection[8] = {-1, -10, 1, 10, -9, -11, 11, 9};
 
-// Warning: this function does not check wether the PIECE is attacked, only the square.
-// a black piece on square attacked by another black piece is not an attack on the piece.
 bool isSquareAttacked(int square, int side, BOARD *pos)
 {
     ASSERT(checkBoard(pos));

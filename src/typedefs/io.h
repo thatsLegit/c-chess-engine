@@ -6,6 +6,7 @@
 char *printRank(int square, const BOARD *pos);
 char *printFile(int square, const BOARD *pos);
 char *printSquare(int square, const BOARD *pos);
+// 1st parameter move comes from POTENTIAL_MOVE or MOVE_CMD
 char *printMove(int move, const BOARD *pos);
 void printMoveList(POTENTIAL_MOVE_LIST *list, const BOARD *pos);
 int parseMove(char *s, BOARD *pos, POTENTIAL_MOVE_LIST *list);

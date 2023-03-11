@@ -20,6 +20,9 @@ U64 pieceKeys[13][120];
 U64 sideKey;
 U64 castleKeys[16];
 
+// The generated key is a 64 bits integer that uniquely identifies a given position on the board
+// meaning where each piece is located on the board, the castle permissions and the side to play.
+// At the beginning of the game the key will always be the same.
 U64 generatePosKey(const BOARD *pos);
 
 #endif
