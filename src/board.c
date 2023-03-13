@@ -33,8 +33,6 @@ int parseFen(char *fen, BOARD *pos)
     int file = FILE_A;
     int piece = 0;
     int count = 0;
-    int sq64 = 0;
-    int sq120 = 0;
 
     resetBoard(pos);
 
@@ -107,12 +105,8 @@ int parseFen(char *fen, BOARD *pos)
 
         // only if piece or empty square. If piece, count is 1.
         for (int i = 0; i < count; i++) {
-            sq64 = rank * 8 + file;
-            sq120 = SQ120(sq64);
-            // we have a piece
-            if (piece != EMPTY)
-                pos->pieces[sq120] = piece;
-            // if empty squares only, we go the the next piece.
+            int sq120 = FR2SQ(file, rank);
+            if (piece != EMPTY) pos->pieces[sq120] = piece;
             file++;
         }
 
@@ -148,7 +142,7 @@ int parseFen(char *fen, BOARD *pos)
     fen++;
 
     ASSERT(pos->castlePerm >= 0 && pos->castlePerm <= 15);
-
+    printf("the fen character: %c\n", *fen);
     // en passant square is set
     if (*fen != '-') {
         int file = *fen - 'a';

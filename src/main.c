@@ -11,14 +11,15 @@
 #include "typedefs/pv.h"
 #include "typedefs/search.h"
 
-#define PERFT_FEN "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1"
+#define FEN "2rr3k/pp3pp1/1nnqbN1p/3pN3/2pP4/2P3Q1/PPB4P/R4RK1 w - -"
 
 int main()
 {
     allInit();
     BOARD board;
+    SEARCH_INFO info;
     POTENTIAL_MOVE_LIST list;
-    parseFen(PERFT_FEN, &board);
+    parseFen(FEN, &board);
 
     char input[6] = "";
 
@@ -26,21 +27,16 @@ int main()
         printBoard(&board);
         generateAllMoves(&board, &list);
 
-        printf("Please enter the move > ");
+        printf("Please enter a move or command > ");
         fgets(input, 6, stdin);
 
         if (input[0] == 'q')
             break;
         else if (input[0] == 't')
             takeMove(&board);
-        else if (input[0] == 'p') {
-            // runPerfTesting(4, &board);
-            int max = getPvLine(4, &board);
-            printf("pv line for %d moves: \n", max);
-            for (int i = 0; i < max; i++) {
-                int move = board.pvArray[i];
-                printf("%s \n", printMove(move, &board));
-            }
+        else if (input[0] == 's') {
+            info.depth = 4;
+            searchPosition(&board, &info);
         }
         else {
             int move = parseMove(input, &board, &list);

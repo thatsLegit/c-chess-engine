@@ -33,12 +33,9 @@ void initPVTable(PVE_TABLE *table)
     table->numEntries = pvSize / sizeof(PV_ENTRY);
     if (table->data != NULL) free(table->data);
     table->data = malloc(table->numEntries * sizeof(PV_ENTRY));
-    // what's the point of clearing it if we just allocated it ?
-    clearPvTable(table);
-    printf("pv table has been initialized with %d entries\n", table->numEntries);
 }
 
-int getPvLine(const int depth, BOARD *pos)
+int updatePvLine(const int depth, BOARD *pos)
 {
     ASSERT(depth < MAX_DEPTH);
 
@@ -68,9 +65,9 @@ int getPvLine(const int depth, BOARD *pos)
 
 void storePvMove(const BOARD *pos, const int move)
 {
+    // we already have a unique hash for any given position, we just modulo it to fit into the pvTable->data
+    // we however do not handle collisions like it's normally done in a hash table.
     int index = pos->posKey % pos->pvTable->numEntries;
-    ASSERT(index > 0 && index <= pos->pvTable->numEntries - 1);
-
     pos->pvTable->data[index].move = move;
     pos->pvTable->data[index].posKey = pos->posKey;
 }
@@ -78,11 +75,6 @@ void storePvMove(const BOARD *pos, const int move)
 int probePvMove(const BOARD *pos)
 {
     int index = pos->posKey % pos->pvTable->numEntries;
-    ASSERT(index > 0 && index <= pos->pvTable->numEntries - 1);
-
-    if (pos->pvTable->data[index].posKey == pos->posKey) {
-        return pos->pvTable->data[index].move;
-    }
-
+    if (pos->pvTable->data[index].posKey == pos->posKey) return pos->pvTable->data[index].move;
     return NOMOVE;
 }

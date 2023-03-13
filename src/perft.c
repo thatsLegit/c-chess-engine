@@ -41,7 +41,7 @@ static void parseLine(char *line, char *fen, char **tests)
     token = strtok(line, ";");
     strcpy(fen, token);
 
-    while (token != NULL && testIndex < MAX_DEPTH) {
+    while (token != NULL && testIndex < TESTING_DEPTH) {
         token = strtok(NULL, ";");
         strcpy(tests[testIndex++], token);
     }
@@ -51,7 +51,7 @@ static void processLine(BOARD *pos, char *line, char *fen, char **tests, int *to
 {
     parseLine(line, fen, tests);
 
-    for (int i = 0; i < MAX_DEPTH; i++) {
+    for (int i = 0; i < TESTING_DEPTH; i++) {
         strtok(tests[i], " "); /* depth is not used */
         int expectation = atoi(strtok(NULL, " "));
 
@@ -73,17 +73,18 @@ static void processLine(BOARD *pos, char *line, char *fen, char **tests, int *to
 void largeScaleTesting(BOARD *pos)
 {
     int time = getTimeMs();
-    FILE *ptr = fopen("/Users/stepanov/Dev/c/c-chess-engine/docs/perftsuite.epd", "r");
+    FILE *ptr = fopen("/Users/iljastepanov/dev/c/chess-engine/docs/perftsuite.epd", "r");
     if (ptr == NULL) printf("Error: %s\n", strerror(errno));
 
     int totalErrors = 0, totalLines = 0, lineSize = 0;
     char ch = '\0';
     char line[MAX_LINE_SIZE] = "";
     char fen[MAX_FEN_SIZE] = "";
-    char **tests = malloc(sizeof(char *) * MAX_DEPTH);
+    char **tests = malloc(sizeof(char *) * TESTING_DEPTH);
 
-    for (int i = 0; i < MAX_DEPTH; i++)
+    for (int i = 0; i < TESTING_DEPTH; i++)
         tests[i] = malloc(sizeof(char) * MAX_TEST_SIZE);
+
     do {
         ch = fgetc(ptr);
 

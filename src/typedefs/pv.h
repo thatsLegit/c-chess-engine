@@ -12,6 +12,6 @@ void storePvMove(const BOARD *pos, const int move);
 int probePvMove(const BOARD *pos);
 // Build the principal variation array (pvArray) by getting the best move to play on each
 // new move until reaching the depth or the MAX_DEPTH or illegal move is made.
-int getPvLine(const int depth, BOARD *pos);
+int updatePvLine(const int depth, BOARD *pos);
 
 #endif

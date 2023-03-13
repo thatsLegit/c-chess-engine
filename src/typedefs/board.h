@@ -88,11 +88,14 @@ typedef struct {
     int timeset;
     int movestogo;
 
-    long nodes;
+    long nodes; /* count of positions visited and evaluated */
 
     bool infinite;
     bool quit;
     bool stopped;
+
+    float failHigh; /* used as an indicator of how well ordered are the moves for search */
+    float failHighFirst; /* used as an indicator of how well ordered are the moves for search */
 } SEARCH_INFO;
 
 // To understand the squares indexing, represent yourself the board as playing with white pieces
@@ -153,8 +156,7 @@ typedef struct BOARD {
     // Next two arrays are used for ordering moves, which is critical.
     // Stores non-capture moves only.
     // Get reset on each new search.
-    // Everytime a move improves on alpha, for that piece type and its "to" square, 
-    // we will increment this array. 
+    // Everytime a move improves on alpha, for that piece type and its "to" square, increment 
     int searchHistory[13][BRD_SQ_NUM];
     // Stores the 2 moves that the most recently caused beta-cutoffs
     int searchKillers[2][BRD_SQ_NUM];
