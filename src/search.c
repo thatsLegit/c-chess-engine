@@ -17,6 +17,26 @@ static void checkUp()
     // Check if time up or interrupt from GUI
 }
 
+// Mutates the move list by swapping current move with the one with the highest score
+// Traverses the list from the given moveNum
+// TODO: wouldn't it be better to simply sort the list right after we generate it ?
+static void orderNextMove(int moveNum, POTENTIAL_MOVE_LIST *list)
+{
+    int index = moveNum;
+    int bestScore = 0;
+
+    for (int i = moveNum; i < list->count; i++) {
+        if (list->moves[i].score > bestScore) {
+            index = i;
+            bestScore = list->moves[i].score;
+        }
+    }
+
+    POTENTIAL_MOVE temp = list->moves[moveNum];
+    list->moves[moveNum] = list->moves[index];
+    list->moves[index] = temp;
+}
+
 // Is there a repetition of the current board position in the last moves,
 // excluding the captures and pawn movements because those cannot be repeated,
 // that's why we start off from i = pos->historyPly - pos->fiftyMove
@@ -84,12 +104,25 @@ static int alphaBeta(int alpha, int beta, int depth, BOARD *pos, SEARCH_INFO *in
     int prevAlpha = alpha;
     int bestMove = NOMOVE;
     int score = -INFINITY;
+    int pvMove = probePvMove(pos);
+
+    // if we have a move here, it means that we are currently in the mainline
+    // i.e. the line that is considered the best in previous depths search
+    if (pvMove != NOMOVE) {
+        for (int i = 0; i < list.count; i++) {
+            if (list.moves[i].move == pvMove) {
+                list.moves[i].score = 2000000;
+                break;
+            }
+        }
+    }
 
     for (int i = 0; i < list.count; i++) {
+        orderNextMove(i, &list);
         int move = list.moves[i].move;
         if (!makeMove(pos, move)) continue;
         legal++;
-        // inverting beta & alpha
+        // as the side to play changes, alpha and beta are swapped
         score = -alphaBeta(-beta, -alpha, depth - 1, pos, info, true);
         takeMove(pos);
         if (score > alpha) { /* improvement on alpha */
@@ -97,10 +130,22 @@ static int alphaBeta(int alpha, int beta, int depth, BOARD *pos, SEARCH_INFO *in
             if (score >= beta) {
                 if (legal == 1) info->failHighFirst++;
                 info->failHigh++;
+
+                // beta cut-off is not a capture
+                // for further orderding beta cut-offs that are not captures
+                if (!(move & MOVE_CAPT_FLAG)) {
+                    pos->searchKillers[1][pos->ply] = pos->searchKillers[0][pos->ply]; /* unshifting */
+                    pos->searchKillers[0][pos->ply] = move;
+                }
+
                 return beta;
             }
             alpha = score;
             bestMove = move;
+            // for further ordering of alpha improvements that are not captures
+            if (!(move & MOVE_CAPT_FLAG)) {
+                pos->searchHistory[pos->pieces[FROM_SQ(move)]][TO_SQ(move)] += depth;
+            }
         }
     }
 

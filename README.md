@@ -10,6 +10,9 @@ Main steps of the development:
 - proceed with the creation of move making functions
 - performance testing with recursion
 
+To dos:
+-use sorting for finding the next move in alphabeta (including pvMove and captures)
+
 Some notes on debugging:
 
 the ASSERT macro that is used all over the codebase does NOT impact AT ALL the performance of the program

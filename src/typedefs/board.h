@@ -153,13 +153,13 @@ typedef struct BOARD {
     PVE_TABLE* pvTable; /* principal variation table */
     int pvArray[MAX_DEPTH]; /* principal variation array */
 
-    // Next two arrays are used for ordering moves, which is critical.
-    // Stores non-capture moves only.
-    // Get reset on each new search.
+    // Move ordering. Stores non-capture moves only. Get reset on each new search.
     // Everytime a move improves on alpha, for that piece type and its "to" square, increment 
     int searchHistory[13][BRD_SQ_NUM];
-    // Stores the 2 moves that the most recently caused beta-cutoffs
-    int searchKillers[2][BRD_SQ_NUM];
+
+    // Move ordering: stores the 2 moves that the most recently caused beta-cutoffs
+    // Get reset on each new search.
+    int searchKillers[2][MAX_DEPTH];
 } BOARD;
 
 bool isSquareOffBoard(int square, BOARD *pos);

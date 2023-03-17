@@ -10,8 +10,17 @@
 #include <stdlib.h>
 
 // For move ordering
+// 1. Principal variation move (2M)
+// 2. Captures (1M)
+// 3. Killers (900K/800K)
+// 4. History scores (units)
 const int victimScores[13] = {0, 100, 200, 300, 400, 500, 600, 100, 200, 300, 400, 500, 600};
-static int mvvlvaScores[13][13]; /* [victim][attacker] */
+
+// Works on the following principle: the stronger the victim and the weaker the attacker, the highest
+// the score. The highest score would be pawn taking queen, resulting in a score of 505, then 504
+// for knight taking queen, 503 bishop takes queen etc...
+// [victim][attacker]
+static int mvvlvaScores[13][13];
 
 // some interesting data structure here...
 const int slidingPieces[8] = {wB, wR, wQ, 0, bB, bR, bQ, 0};
@@ -44,19 +53,38 @@ const int numDirections[13] = {0, 0, 8, 4, 4, 8, 8, 0, 8, 4, 4, 8, 8};
 static void addQuietMove(BOARD *pos, int move, POTENTIAL_MOVE_LIST *list)
 {
     list->moves[list->count].move = move;
-    list->moves[list->count].score = 0;
+
+    // I don't get when this is supposed to be true as we always first generate the moves in a search
+    // and then evaluate the position. Based on the evaluation of the position, we decide whether it's
+    // a killer move or not, so how do we get to score it 900000 here ?
+    // The answer: as the search is iterating on depth for as long as there is no stop, we improve
+    // iteratively the order of the generated moves for the subsequent depths. Ex: we had time to search
+    // until depth 10 and at depth 9, a killer move has been found, so we will examine this killer move
+    // found at depth 9 while iterating on the 10th time in the searchPosition function.
+    // This is different from captures as those can be ordered right away from depth 1.
+    if (pos->searchKillers[0][pos->ply] == move) {
+        list->moves[list->count].score = 900000;
+    }
+    else if (pos->searchKillers[0][pos->ply] == move) {
+        list->moves[list->count].score = 800000;
+    }
+    else
+        list->moves[list->count].score = pos->searchHistory[pos->pieces[FROM_SQ(move)]][TO_SQ(move)];
+
     list->count++;
 }
 static void addCaptureMove(BOARD *pos, int move, POTENTIAL_MOVE_LIST *list)
 {
     list->moves[list->count].move = move;
-    list->moves[list->count].score = mvvlvaScores[CAPT_PIECE(move)][pos->pieces[FROM_SQ(move)]];
+    // +1000000 ensures that we look for captures before killer moves
+    list->moves[list->count].score = mvvlvaScores[CAPT_PIECE(move)][pos->pieces[FROM_SQ(move)]] + 1000000;
     list->count++;
 }
 static void addEnPassantMove(BOARD *pos, int move, POTENTIAL_MOVE_LIST *list)
 {
     list->moves[list->count].move = move;
-    list->moves[list->count].score = 105;
+    // +1000000 ensures that we look for captures before killer moves
+    list->moves[list->count].score = 105 + 1000000;
     list->count++;
 }
 

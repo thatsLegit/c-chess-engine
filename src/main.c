@@ -39,7 +39,7 @@ int main()
         else if (input[0] == 't')
             takeMove(&board);
         else if (input[0] == 's') {
-            info.depth = 5;
+            info.depth = 6;
             searchPosition(&board, &info);
         }
         else {
