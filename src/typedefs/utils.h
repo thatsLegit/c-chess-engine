@@ -10,7 +10,7 @@
 jmp_buf savebuff;
 
 // comment this in/out to toggle debug mode
-#define DEBUG
+// #define DEBUG
 
 #define TRY if (setjmp(savebuff) == 0)
 #define CATCH else

@@ -4,6 +4,7 @@
 #include "typedefs/bitboards.h"
 #include "typedefs/board.h"
 #include "typedefs/hashkeys.h"
+#include "typedefs/movegen.h"
 
 /*
    120 To 64
@@ -102,4 +103,5 @@ void allInit()
     initSquares();
     initBitMasks();
     initHashKeys();
+    initMvvlvaScores();
 }

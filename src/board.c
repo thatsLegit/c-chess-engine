@@ -142,7 +142,6 @@ int parseFen(char *fen, BOARD *pos)
     fen++;
 
     ASSERT(pos->castlePerm >= 0 && pos->castlePerm <= 15);
-    printf("the fen character: %c\n", *fen);
     // en passant square is set
     if (*fen != '-') {
         int file = *fen - 'a';
@@ -295,8 +294,6 @@ void resetBoard(BOARD *pos)
     pos->historyPly = 0;
     pos->castlePerm = 0;
     pos->posKey = 0ULL;
-    pos->pvTable = malloc(sizeof(PVE_TABLE));
-    initPVTable(pos->pvTable);
 }
 
 void printBoard(const BOARD *pos)

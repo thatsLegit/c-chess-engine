@@ -9,6 +9,10 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
+// For move ordering
+const int victimScores[13] = {0, 100, 200, 300, 400, 500, 600, 100, 200, 300, 400, 500, 600};
+static int mvvlvaScores[13][13]; /* [victim][attacker] */
+
 // some interesting data structure here...
 const int slidingPieces[8] = {wB, wR, wQ, 0, bB, bR, bQ, 0};
 const int nonSlidingPieces[6] = {wN, wK, 0, bN, bK, 0};
@@ -46,13 +50,13 @@ static void addQuietMove(BOARD *pos, int move, POTENTIAL_MOVE_LIST *list)
 static void addCaptureMove(BOARD *pos, int move, POTENTIAL_MOVE_LIST *list)
 {
     list->moves[list->count].move = move;
-    list->moves[list->count].score = 0;
+    list->moves[list->count].score = mvvlvaScores[CAPT_PIECE(move)][pos->pieces[FROM_SQ(move)]];
     list->count++;
 }
 static void addEnPassantMove(BOARD *pos, int move, POTENTIAL_MOVE_LIST *list)
 {
     list->moves[list->count].move = move;
-    list->moves[list->count].score = 0;
+    list->moves[list->count].score = 105;
     list->count++;
 }
 
@@ -307,4 +311,13 @@ bool moveExists(BOARD *pos, int move)
     }
 
     return false;
+}
+
+void initMvvlvaScores()
+{
+    for (int attacker = wP; attacker <= bK; attacker++) {
+        for (int victim = wP; victim <= bK; victim++) {
+            mvvlvaScores[victim][attacker] = victimScores[victim] + 6 - (victimScores[attacker] / 100);
+        }
+    }
 }

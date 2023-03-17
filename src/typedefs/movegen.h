@@ -9,5 +9,6 @@
 
 void generateAllMoves(BOARD *pos, POTENTIAL_MOVE_LIST *list);
 bool moveExists(BOARD *pos, int move);
+void initMvvlvaScores();
 
 #endif
