@@ -20,11 +20,9 @@ const int pvSize = 0x1000000 * 2;
 
 void clearPvTable(PVE_TABLE *table)
 {
-    // Having the pointer to the first element, we can just increment the pointer
-    // to go to the next element.
-    for (PV_ENTRY *ptr = table->data; ptr < table->data + table->numEntries; ptr++) {
-        ptr->move = NOMOVE;
-        ptr->posKey = 0ULL;
+    for (int i = 0; i < table->numEntries; i++) {
+        table->data[i].move = NOMOVE;
+        table->data[i].posKey = 0ULL;
     }
 }
 

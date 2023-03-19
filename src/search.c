@@ -19,7 +19,8 @@ static void checkUp()
 
 // Mutates the move list by swapping current move with the one with the highest score
 // Traverses the list from the given moveNum
-// TODO: wouldn't it be better to simply sort the list right after we generate it ?
+// Sorting the whole array doesn't appear to be useful as we have beta cut-offs rather
+// quickly. Having a better evaluation of the position would help more.
 static void orderNextMove(int moveNum, POTENTIAL_MOVE_LIST *list)
 {
     int index = moveNum;
@@ -57,7 +58,7 @@ static void clearForSearch(BOARD *pos, SEARCH_INFO *info)
     }
 
     for (int i = 0; i < 2; i++) {
-        for (int j = 0; j < BRD_SQ_NUM; j++) {
+        for (int j = 0; j < MAX_DEPTH; j++) {
             pos->searchKillers[i][j] = 0;
         }
     }
@@ -72,11 +73,55 @@ static void clearForSearch(BOARD *pos, SEARCH_INFO *info)
     info->failHighFirst = 0;
 }
 
+// The purpose is to reach a "quiet" position before we can start its evaluation.
 // Limits the horizon effect: allows optimizing evaluation of captures,
 // by for instance evaluate the postion only when all the captures have been made.
-static int quiescence(int alpha, int beta, BOARD *pos, SEARCH_INFO *info)
+// Only happens upon reaching the max depth.
+static int quiescenceSearch(int alpha, int beta, BOARD *pos, SEARCH_INFO *info)
 {
-    return 0;
+    ASSERT(checkBoard(pos));
+    info->nodes++;
+
+    if (isRepetition(pos) || pos->fiftyMove >= 100) return 0; /* draw case */
+    if (pos->ply > MAX_DEPTH) return evaluatePosition(pos);   /* will probably never happen ? */
+
+    int score = evaluatePosition(pos);
+
+    if (score >= beta) return beta;
+    if (score >= alpha) alpha = score;
+
+    POTENTIAL_MOVE_LIST list;
+    generateAllMoves(pos, &list, true);
+
+    int legal = 0; /* used to know if there are any legal moves in the position */
+    int prevAlpha = alpha;
+    int bestMove = NOMOVE;
+
+    // There might be captures at all to check so the loop won't even start
+    // and it just returns alpha in the end.
+    for (int i = 0; i < list.count; i++) {
+        orderNextMove(i, &list);
+        int move = list.moves[i].move;
+        if (!makeMove(pos, move)) continue;
+        legal++;
+        // as the side to play changes, alpha and beta are swapped
+        score = -quiescenceSearch(-beta, -alpha, pos, info);
+        takeMove(pos);
+        if (score > alpha) {     /* improvement on alpha */
+            if (score >= beta) { /* beta cut-off */
+                if (legal == 1) info->failHighFirst++;
+                info->failHigh++;
+                return beta;
+            }
+            alpha = score;
+            bestMove = move;
+        }
+    }
+
+    if (prevAlpha != alpha) storePvMove(pos, bestMove);
+
+    // We also won't be checking for mates here as it's only about captures
+    return alpha;
 }
 
 // alpha: the lower bound for the maximizer (white)
@@ -84,21 +129,18 @@ static int quiescence(int alpha, int beta, BOARD *pos, SEARCH_INFO *info)
 // In other words, alpha is the best possible score for the maximizer in the current search
 // and beta is the opposite, the best possible score for the minimizer.
 // alpha cut-off: when beta < alpha in the current search, meaning that black would be better
-// beta cut-off is when the maximizer can out-play the minimizer's beta, i.e. score > beta
+// beta cut-off is when the opponent has the possibility to improve its position,
+// which is not acceptable (score > beta)
 static int alphaBeta(int alpha, int beta, int depth, BOARD *pos, SEARCH_INFO *info, bool DoNull)
 {
     ASSERT(checkBoard(pos));
 
-    if (depth == 0) {
-        info->nodes++;
-        return evaluatePosition(pos);
-    } /* main base case */
-
-    if (isRepetition(pos) || pos->fiftyMove >= 100) return 0; /* draw case */
-    if (pos->ply > MAX_DEPTH) return evaluatePosition(pos);   /* will probably never happen ? */
+    if (depth == 0) return quiescenceSearch(alpha, beta, pos, info);        /* main base case */
+    if ((isRepetition(pos) || pos->fiftyMove >= 100) && pos->ply) return 0; /* draw case */
+    if (pos->ply > MAX_DEPTH) return evaluatePosition(pos);                 /* will probably never happen ? */
 
     POTENTIAL_MOVE_LIST list;
-    generateAllMoves(pos, &list);
+    generateAllMoves(pos, &list, false);
 
     int legal = 0; /* used to know if there are any legal moves in the position */
     int prevAlpha = alpha;
@@ -125,9 +167,8 @@ static int alphaBeta(int alpha, int beta, int depth, BOARD *pos, SEARCH_INFO *in
         // as the side to play changes, alpha and beta are swapped
         score = -alphaBeta(-beta, -alpha, depth - 1, pos, info, true);
         takeMove(pos);
-        if (score > alpha) { /* improvement on alpha */
-            /* beta cut-off, not acceptable for the minimizer */
-            if (score >= beta) {
+        if (score > alpha) {     /* improvement on alpha */
+            if (score >= beta) { /* beta cut-off */
                 if (legal == 1) info->failHighFirst++;
                 info->failHigh++;
 
@@ -162,6 +203,7 @@ static int alphaBeta(int alpha, int beta, int depth, BOARD *pos, SEARCH_INFO *in
 // The core of the engine
 void searchPosition(BOARD *pos, SEARCH_INFO *info)
 {
+    int start = getTimeMs();
     int bestMove = NOMOVE;
     int bestScore = -INFINITY;
     int pvMoves = 0;
@@ -170,6 +212,7 @@ void searchPosition(BOARD *pos, SEARCH_INFO *info)
 
     for (int depth = 1; depth <= info->depth; depth++) {
         // check out of time ?
+        // isn't alpha supposed to be +INFINITY if the playing side is black ?
         bestScore = alphaBeta(-INFINITY, INFINITY, depth, pos, info, true);
         pvMoves = updatePvLine(depth, pos);
         bestMove = pos->pvArray[0];
@@ -183,4 +226,6 @@ void searchPosition(BOARD *pos, SEARCH_INFO *info)
         putc('\n', stdout);
         printf("Ordering: %.2f\n", info->failHighFirst / info->failHigh);
     }
+
+    printf("Time in ms: %d\n", getTimeMs() - start);
 }

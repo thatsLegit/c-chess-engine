@@ -22,6 +22,15 @@ const int victimScores[13] = {0, 100, 200, 300, 400, 500, 600, 100, 200, 300, 40
 // [victim][attacker]
 static int mvvlvaScores[13][13];
 
+void initMvvlvaScores()
+{
+    for (int attacker = wP; attacker <= bK; attacker++) {
+        for (int victim = wP; victim <= bK; victim++) {
+            mvvlvaScores[victim][attacker] = victimScores[victim] + 6 - (victimScores[attacker] / 100);
+        }
+    }
+}
+
 // some interesting data structure here...
 const int slidingPieces[8] = {wB, wR, wQ, 0, bB, bR, bQ, 0};
 const int nonSlidingPieces[6] = {wN, wK, 0, bN, bK, 0};
@@ -88,7 +97,7 @@ static void addEnPassantMove(BOARD *pos, int move, POTENTIAL_MOVE_LIST *list)
     list->count++;
 }
 
-static void slidingPiecesMoves(BOARD *pos, POTENTIAL_MOVE_LIST *list, int side)
+static void slidingPiecesMoves(BOARD *pos, POTENTIAL_MOVE_LIST *list, int side, bool capturesOnly)
 {
     int piece, pieceIdx = 0;
     pieceIdx = slidingPiecesIdx[side];
@@ -111,7 +120,7 @@ static void slidingPiecesMoves(BOARD *pos, POTENTIAL_MOVE_LIST *list, int side)
                         break;
                     }
 
-                    addQuietMove(pos, MOVE_FACTORY(square, t_square, EMPTY, EMPTY, 0), list);
+                    if (!capturesOnly) addQuietMove(pos, MOVE_FACTORY(square, t_square, EMPTY, EMPTY, 0), list);
                     t_square += dir;
                 }
             }
@@ -120,7 +129,7 @@ static void slidingPiecesMoves(BOARD *pos, POTENTIAL_MOVE_LIST *list, int side)
     }
 }
 
-static void nonSlidingPiecesMoves(BOARD *pos, POTENTIAL_MOVE_LIST *list, int side)
+static void nonSlidingPiecesMoves(BOARD *pos, POTENTIAL_MOVE_LIST *list, int side, bool capturesOnly)
 {
     int piece, pieceIdx = 0;
     pieceIdx = nonSlidingPiecesIdx[side];
@@ -142,7 +151,7 @@ static void nonSlidingPiecesMoves(BOARD *pos, POTENTIAL_MOVE_LIST *list, int sid
                     continue;
                 }
 
-                addQuietMove(pos, MOVE_FACTORY(square, t_square, EMPTY, EMPTY, 0), list);
+                if (!capturesOnly) addQuietMove(pos, MOVE_FACTORY(square, t_square, EMPTY, EMPTY, 0), list);
             }
         }
         piece = nonSlidingPieces[pieceIdx++];
@@ -175,14 +184,14 @@ static void addWhitePawnMove(POTENTIAL_MOVE_LIST *list, BOARD *pos, int from, in
         addQuietMove(pos, MOVE_FACTORY(from, to, EMPTY, EMPTY, 0), list);
 }
 
-static void whitePawnsMove(BOARD *pos, POTENTIAL_MOVE_LIST *list)
+static void whitePawnsMove(BOARD *pos, POTENTIAL_MOVE_LIST *list, bool capturesOnly)
 {
     for (int i = 0; i < pos->pieceNum[wP]; i++) {
         int square = pos->pieceList[wP][i];
         ASSERT(!isSquareOffBoard(square, pos));
 
         // moving forward
-        if (pos->pieces[square - 10] == EMPTY) {
+        if (pos->pieces[square - 10] == EMPTY && !capturesOnly) {
             addWhitePawnMove(list, pos, square, square - 10);
             if (squareRank(square, pos) == RANK_2 && pos->pieces[square - 20] == EMPTY)
                 addQuietMove(pos, MOVE_FACTORY(square, (square - 20), EMPTY, EMPTY, PAWN_START), list);
@@ -256,14 +265,14 @@ static void addBlackPawnMove(POTENTIAL_MOVE_LIST *list, BOARD *pos, int from, in
         addQuietMove(pos, MOVE_FACTORY(from, to, EMPTY, EMPTY, 0), list);
 }
 
-static void blackPawnsMove(BOARD *pos, POTENTIAL_MOVE_LIST *list)
+static void blackPawnsMove(BOARD *pos, POTENTIAL_MOVE_LIST *list, bool capturesOnly)
 {
     for (int i = 0; i < pos->pieceNum[bP]; i++) {
         int square = pos->pieceList[bP][i];
         ASSERT(!isSquareOffBoard(square, pos));
 
         // moving forward
-        if (pos->pieces[square + 10] == EMPTY) {
+        if (pos->pieces[square + 10] == EMPTY && !capturesOnly) {
             addBlackPawnMove(list, pos, square, square + 10);
             if (squareRank(square, pos) == RANK_7 && pos->pieces[square + 20] == EMPTY) {
                 addQuietMove(pos, MOVE_FACTORY(square, (square + 20), EMPTY, EMPTY, PAWN_START), list);
@@ -308,28 +317,28 @@ static void blackSideCastling(BOARD *pos, POTENTIAL_MOVE_LIST *list)
     }
 }
 
-void generateAllMoves(BOARD *pos, POTENTIAL_MOVE_LIST *list)
+void generateAllMoves(BOARD *pos, POTENTIAL_MOVE_LIST *list, bool capturesOnly)
 {
     list->count = 0;
     int side = pos->side;
 
     if (side == WHITE) {
-        whitePawnsMove(pos, list);
-        whiteSideCastling(pos, list);
+        whitePawnsMove(pos, list, capturesOnly);
+        if (!capturesOnly) whiteSideCastling(pos, list);
     }
     else {
-        blackPawnsMove(pos, list);
-        blackSideCastling(pos, list);
+        blackPawnsMove(pos, list, capturesOnly);
+        if (!capturesOnly) blackSideCastling(pos, list);
     }
 
-    slidingPiecesMoves(pos, list, side);
-    nonSlidingPiecesMoves(pos, list, side);
+    slidingPiecesMoves(pos, list, side, capturesOnly);
+    nonSlidingPiecesMoves(pos, list, side, capturesOnly);
 }
 
 bool moveExists(BOARD *pos, int move)
 {
     POTENTIAL_MOVE_LIST list;
-    generateAllMoves(pos, &list);
+    generateAllMoves(pos, &list, false);
 
     for (int i = 0; i < list.count; i++) {
         if (list.moves[i].move != move) continue;
@@ -339,13 +348,4 @@ bool moveExists(BOARD *pos, int move)
     }
 
     return false;
-}
-
-void initMvvlvaScores()
-{
-    for (int attacker = wP; attacker <= bK; attacker++) {
-        for (int victim = wP; victim <= bK; victim++) {
-            mvvlvaScores[victim][attacker] = victimScores[victim] + 6 - (victimScores[attacker] / 100);
-        }
-    }
 }

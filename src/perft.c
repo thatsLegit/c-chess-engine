@@ -6,6 +6,7 @@
 #include "typedefs/movegen.h"
 #include "typedefs/utils.h"
 #include <errno.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -17,7 +18,7 @@ int runPerfTesting(int depth, BOARD *pos)
     if (depth == 0) return 1;
 
     POTENTIAL_MOVE_LIST list;
-    generateAllMoves(pos, &list);
+    generateAllMoves(pos, &list, false);
 
     for (int i = 0; i < list.count; i++) {
         // printf("\nDepth: %d; playing the move: %s\n", depth, printMove(list.moves[i].move, pos));

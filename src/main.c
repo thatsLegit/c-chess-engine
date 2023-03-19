@@ -1,4 +1,5 @@
 #include <assert.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -18,9 +19,10 @@ int main()
     allInit();
 
     BOARD board;
+    parseFen(FEN, &board);
+
     board.pvTable = malloc(sizeof(PVE_TABLE));
     initPVTable(board.pvTable);
-    parseFen(FEN, &board);
 
     SEARCH_INFO info;
     POTENTIAL_MOVE_LIST list;
@@ -29,7 +31,7 @@ int main()
 
     while (true) {
         printBoard(&board);
-        generateAllMoves(&board, &list);
+        generateAllMoves(&board, &list, false);
 
         printf("Please enter a move or command > ");
         fgets(input, 6, stdin);
