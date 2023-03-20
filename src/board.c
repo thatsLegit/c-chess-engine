@@ -24,7 +24,7 @@ int squareRank(int square, const BOARD *pos)
     return 9 - (square / 10);
 }
 
-int parseFen(char *fen, BOARD *pos)
+void parseFen(char *fen, BOARD *pos)
 {
     ASSERT(fen != NULL);
     ASSERT(pos != NULL);
@@ -100,7 +100,7 @@ int parseFen(char *fen, BOARD *pos)
 
         default:
             fprintf(stderr, "FEN error\n ");
-            return -1;
+            exit(1);
         }
 
         // only if piece or empty square. If piece, count is 1.
@@ -121,6 +121,7 @@ int parseFen(char *fen, BOARD *pos)
     // castling permissions (KQkq)
     for (int i = 0; i < 4; i++) {
         if (*fen == ' ') break;
+
         switch (*fen) {
         case 'K':
             pos->castlePerm |= WKCA;
@@ -142,11 +143,11 @@ int parseFen(char *fen, BOARD *pos)
     fen++;
 
     ASSERT(pos->castlePerm >= 0 && pos->castlePerm <= 15);
+
     // en passant square is set
     if (*fen != '-') {
-        int file = *fen - 'a';
-        // (fen + 1) is equivalent to fen[1] as it's a char array and each element is 1B
-        int rank = *(fen + 1) - '1';
+        file = fen[0] - 'a';
+        rank = fen[1] - '1';
 
         ASSERT(file >= FILE_A && file <= FILE_H);
         ASSERT(rank >= RANK_1 && rank <= RANK_8);
@@ -156,7 +157,6 @@ int parseFen(char *fen, BOARD *pos)
 
     pos->posKey = generatePosKey(pos);
     updateMaterialLists(pos);
-    return 0;
 }
 
 void updateMaterialLists(BOARD *pos)

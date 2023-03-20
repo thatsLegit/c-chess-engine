@@ -4,7 +4,7 @@
 #include "board.h"
 
 void clearPvTable(PVE_TABLE *table);
-void initPVTable(PVE_TABLE *table);
+void initPvTable(PVE_TABLE *table);
 // It's possible that index is repeated for 2 different moves:
 // uniqueness is not guaranted so far.
 void storePvMove(const BOARD *pos, const int move);

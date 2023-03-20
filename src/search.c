@@ -11,10 +11,13 @@
 #include <assert.h>
 #include <stdbool.h>
 
-// Called every 4k nodes or so
-static void checkUp()
+// Check if time up or interrupt from GUI
+static void checkUp(SEARCH_INFO *info)
 {
-    // Check if time up or interrupt from GUI
+    if (info->timeset == true && getTimeMs() > info->stoptime) {
+        info->stopped = true;
+    }
+    readInput(info);
 }
 
 // Mutates the move list by swapping current move with the one with the highest score
@@ -80,6 +83,9 @@ static void clearForSearch(BOARD *pos, SEARCH_INFO *info)
 static int quiescenceSearch(int alpha, int beta, BOARD *pos, SEARCH_INFO *info)
 {
     ASSERT(checkBoard(pos));
+
+    if ((info->nodes & 2047) == 0) checkUp(info);
+
     info->nodes++;
 
     if (isRepetition(pos) || pos->fiftyMove >= 100) return 0; /* draw case */
@@ -102,11 +108,16 @@ static int quiescenceSearch(int alpha, int beta, BOARD *pos, SEARCH_INFO *info)
     for (int i = 0; i < list.count; i++) {
         orderNextMove(i, &list);
         int move = list.moves[i].move;
+
         if (!makeMove(pos, move)) continue;
+
         legal++;
         // as the side to play changes, alpha and beta are swapped
         score = -quiescenceSearch(-beta, -alpha, pos, info);
         takeMove(pos);
+
+        if (info->stopped == true) return 0;
+
         if (score > alpha) {     /* improvement on alpha */
             if (score >= beta) { /* beta cut-off */
                 if (legal == 1) info->failHighFirst++;
@@ -135,6 +146,9 @@ static int alphaBeta(int alpha, int beta, int depth, BOARD *pos, SEARCH_INFO *in
 {
     ASSERT(checkBoard(pos));
 
+    // i & x == 0 is true for every y such as y = (x + 1)n
+    if ((info->nodes & 2047) == 0) checkUp(info);
+
     if (depth == 0) return quiescenceSearch(alpha, beta, pos, info);        /* main base case */
     if ((isRepetition(pos) || pos->fiftyMove >= 100) && pos->ply) return 0; /* draw case */
     if (pos->ply > MAX_DEPTH) return evaluatePosition(pos);                 /* will probably never happen ? */
@@ -162,11 +176,16 @@ static int alphaBeta(int alpha, int beta, int depth, BOARD *pos, SEARCH_INFO *in
     for (int i = 0; i < list.count; i++) {
         orderNextMove(i, &list);
         int move = list.moves[i].move;
+
         if (!makeMove(pos, move)) continue;
+
         legal++;
         // as the side to play changes, alpha and beta are swapped
         score = -alphaBeta(-beta, -alpha, depth - 1, pos, info, true);
         takeMove(pos);
+
+        if (info->stopped == true) return 0;
+
         if (score > alpha) {     /* improvement on alpha */
             if (score >= beta) { /* beta cut-off */
                 if (legal == 1) info->failHighFirst++;
@@ -203,7 +222,6 @@ static int alphaBeta(int alpha, int beta, int depth, BOARD *pos, SEARCH_INFO *in
 // The core of the engine
 void searchPosition(BOARD *pos, SEARCH_INFO *info)
 {
-    int start = getTimeMs();
     int bestMove = NOMOVE;
     int bestScore = -INFINITY;
     int pvMoves = 0;
@@ -211,21 +229,23 @@ void searchPosition(BOARD *pos, SEARCH_INFO *info)
     clearForSearch(pos, info);
 
     for (int depth = 1; depth <= info->depth; depth++) {
-        // check out of time ?
+        if (info->stopped == true) break;
+
         // isn't alpha supposed to be +INFINITY if the playing side is black ?
         bestScore = alphaBeta(-INFINITY, INFINITY, depth, pos, info, true);
         pvMoves = updatePvLine(depth, pos);
         bestMove = pos->pvArray[0];
 
-        printf("depth: %d, move: %s, score: %d, nodes: %ld, ", depth, printMove(bestMove, pos), bestScore, info->nodes);
-        printf("pv: ");
+        printf("info score cp %d depth %d nodes %ld time %d pv",
+               bestScore, depth, info->nodes, getTimeMs() - info->starttime);
+
         for (int i = 0; i < pvMoves; i++) {
             int move = pos->pvArray[i];
-            printf("%s ", printMove(move, pos));
+            printf(" %s", printMove(move, pos));
         }
         putc('\n', stdout);
-        printf("Ordering: %.2f\n", info->failHighFirst / info->failHigh);
+        // printf("Ordering: %.2f\n", info->failHighFirst / info->failHigh);
     }
 
-    printf("Time in ms: %d\n", getTimeMs() - start);
+    printf("bestMove: %s\n", printMove(bestMove, pos));
 }

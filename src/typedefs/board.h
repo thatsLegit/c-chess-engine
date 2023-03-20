@@ -3,12 +3,16 @@
 
 #include <stdbool.h>
 
+#define AUTHOR_NAME "ILYA"
+#define ENGINE_NAME "OK ENGINE"
+
 typedef unsigned long long U64;
 
 #define BRD_SQ_NUM 120
 #define MAX_GAME_MOVES 2048
 #define MAX_POSITION_MOVES 256
 #define MAX_DEPTH 64
+#define START_FEN "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
 
 enum { EMPTY, wP, wN, wB, wR, wQ, wK, bP, bN, bB, bR, bQ, bK };
 enum { FILE_A, FILE_B, FILE_C, FILE_D, FILE_E, FILE_F, FILE_G, FILE_H, FILE_NONE };
@@ -176,7 +180,7 @@ void resetBoard(BOARD *pos);
 // 4th part is - or any square [E3/...] and is for en passant
 // 5th part is for fifty move rule
 // 6th part is for the number of full turns played
-int parseFen(char *fen, BOARD *pos);
+void parseFen(char *fen, BOARD *pos);
 void printBoard(const BOARD* pos);
 void updateMaterialLists(BOARD* pos);
 int checkBoard(const BOARD* pos);

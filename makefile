@@ -16,7 +16,7 @@ OBJS=$(patsubst ${SRCDIR}/%.c, ${OBJDIR}/%.o, ${SRCS})
 # This way, every source file produces an object file
 
 BINDIR=bin
-EXECUTABLE=${BINDIR}/vice
+EXECUTABLE=${BINDIR}/okengine
 
 ####################################
 

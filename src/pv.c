@@ -26,7 +26,7 @@ void clearPvTable(PVE_TABLE *table)
     }
 }
 
-void initPVTable(PVE_TABLE *table)
+void initPvTable(PVE_TABLE *table)
 {
     table->numEntries = pvSize / sizeof(PV_ENTRY);
     if (table->data != NULL) free(table->data);
