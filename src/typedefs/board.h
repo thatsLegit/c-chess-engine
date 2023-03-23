@@ -19,6 +19,7 @@ enum { FILE_A, FILE_B, FILE_C, FILE_D, FILE_E, FILE_F, FILE_G, FILE_H, FILE_NONE
 enum { RANK_1, RANK_2, RANK_3, RANK_4, RANK_5, RANK_6, RANK_7, RANK_8, RANK_NONE };
 
 enum { WHITE, BLACK, BOTH };
+enum { UCIMODE, XBOARDMODE, CONSOLEMODE };
 
 typedef struct {
     /*
@@ -97,6 +98,9 @@ typedef struct {
     bool infinite;
     bool quit;
     bool stopped;
+
+    int GAME_MODE; /* UCIMODE, XBOARDMODE, CONSOLEMODE */
+	bool POST_THINKING; /* whether we print out depth, pv line, bestmove, etc... */
 
     float failHigh; /* used as an indicator of how well ordered are the moves for search */
     float failHighFirst; /* used as an indicator of how well ordered are the moves for search */

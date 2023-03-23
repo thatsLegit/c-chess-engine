@@ -6,7 +6,7 @@
 #define INPUT_BUFFER 400 * 5
 
 // go depth 6 wtime 180000 btime 100000 binc 1000 winc 1000 movetime 1000 movestogo 40
-void parseGo(char *line, SEARCH_INFO *info, BOARD *pos);
+void parseGo(char *line, BOARD *pos, SEARCH_INFO *info);
 
 // Handles commands such as:
 // position fen
@@ -15,7 +15,7 @@ void parseGo(char *line, SEARCH_INFO *info, BOARD *pos);
 void parsePosition(char *lineIn, BOARD *pos);
 
 // REPL for GUI instructions
-void UCILoop();
+void UCILoop(BOARD *pos, SEARCH_INFO *info);
 
 // UCI protocol commands:
 /*

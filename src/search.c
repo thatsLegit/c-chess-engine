@@ -229,23 +229,45 @@ void searchPosition(BOARD *pos, SEARCH_INFO *info)
     clearForSearch(pos, info);
 
     for (int depth = 1; depth <= info->depth; depth++) {
-        if (info->stopped == true) break;
+        if (info->stopped) break;
 
         // isn't alpha supposed to be +INFINITY if the playing side is black ?
         bestScore = alphaBeta(-INFINITY, INFINITY, depth, pos, info, true);
         pvMoves = updatePvLine(depth, pos);
         bestMove = pos->pvArray[0];
 
-        printf("info score cp %d depth %d nodes %ld time %d pv",
-               bestScore, depth, info->nodes, getTimeMs() - info->starttime);
-
-        for (int i = 0; i < pvMoves; i++) {
-            int move = pos->pvArray[i];
-            printf(" %s", printMove(move, pos));
+        if (info->GAME_MODE == UCIMODE) {
+            printf("info score cp %d depth %d nodes %ld time %d ",
+                   bestScore, depth, info->nodes, getTimeMs() - info->starttime);
         }
-        putc('\n', stdout);
-        // printf("Ordering: %.2f\n", info->failHighFirst / info->failHigh);
+        else if (info->GAME_MODE == XBOARDMODE && info->POST_THINKING) {
+            printf("%d %d %d %ld ",
+                   depth, bestScore, (getTimeMs() - info->starttime) / 10, info->nodes);
+        }
+        else if (info->GAME_MODE == CONSOLEMODE && info->POST_THINKING) {
+            printf("score:%d depth:%d nodes:%ld time:%d(ms) ",
+                   bestScore, depth, info->nodes, getTimeMs() - info->starttime);
+        }
+
+        if (info->GAME_MODE == UCIMODE || info->POST_THINKING) {
+            if (info->GAME_MODE != XBOARDMODE) printf("pv");
+            for (int i = 0; i < pvMoves; ++i) {
+                printf(" %s", printMove(pos->pvArray[i], pos));
+            }
+            putc('\n', stdout);
+        }
     }
 
-    printf("bestMove: %s\n", printMove(bestMove, pos));
+    if (info->GAME_MODE == UCIMODE) {
+        printf("bestmove %s\n", printMove(bestMove, pos));
+    }
+    else if (info->GAME_MODE == XBOARDMODE) {
+        printf("move %s\n", printMove(bestMove, pos));
+        makeMove(pos, bestMove);
+    }
+    else { /* Console mode */
+        printf("\n\n***!! %s makes move %s !!***\n\n", ENGINE_NAME, printMove(bestMove, pos));
+        makeMove(pos, bestMove);
+        printBoard(pos);
+    }
 }

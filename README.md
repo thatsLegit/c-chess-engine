@@ -15,3 +15,7 @@ Some notes on debugging:
 the ASSERT macro that is used all over the codebase does NOT impact AT ALL the performance of the program
 if the DEBUG macro is no defined. The pre-processor will basically ignore it and the binaries will be free from any asserts.
 However, it is very useful in development and must be activated.
+
+todo:
+-optimize compilation
+-off debug mode

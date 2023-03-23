@@ -11,7 +11,11 @@
 #include <stdlib.h>
 #include <string.h>
 
-void parseGo(char *line, SEARCH_INFO *info, BOARD *pos)
+// UCI is a stateless protocol that treats the chess engine more like a move searching
+// engine rather than a chess playing engine. In a sense that you can feed to it a random
+// position and make it solve tactics puzzles.
+
+void parseGo(char *line, BOARD *pos, SEARCH_INFO *info)
 {
     int depth = -1, movestogo = 30, movetime = -1, time = -1, inc = 0;
     char *ptr = NULL;
@@ -91,7 +95,7 @@ void parsePosition(char *lineIn, BOARD *pos)
     printBoard(pos);
 }
 
-void UCILoop()
+void UCILoop(BOARD *pos, SEARCH_INFO *info)
 {
     char line[INPUT_BUFFER];
     setbuf(stdin, NULL);
@@ -100,11 +104,6 @@ void UCILoop()
     printf("id name %s\n", ENGINE_NAME);
     printf("id author %s\n", AUTHOR_NAME);
     printf("uciok\n");
-
-    BOARD board;
-    SEARCH_INFO info;
-    board.pvTable = malloc(sizeof(PVE_TABLE));
-    initPvTable(board.pvTable);
 
     while (true) {
         memset(&line[0], 0, sizeof(line));                 /* why not &line[0]? */
@@ -118,16 +117,16 @@ void UCILoop()
             continue;
         }
         else if (strncmp(line, "position", 8) == 0) {
-            parsePosition(line, &board);
+            parsePosition(line, pos);
         }
         else if (strncmp(line, "ucinewgame", 10) == 0) {
-            parsePosition("position startpos\n", &board);
+            parsePosition("position startpos\n", pos);
         }
         else if (strncmp(line, "go", 2) == 0) {
-            parseGo(line, &info, &board);
+            parseGo(line, pos, info);
         }
         else if (strncmp(line, "quit", 4) == 0) {
-            info.quit = true;
+            info->quit = true;
             break;
         }
         else if (strncmp(line, "uci", 3) == 0) {
@@ -136,9 +135,6 @@ void UCILoop()
             printf("uciok\n");
         }
 
-        if (info.quit == true) break;
+        if (info->quit == true) break;
     }
-
-    free(board.pvTable->data);
-    free(board.pvTable);
 }
