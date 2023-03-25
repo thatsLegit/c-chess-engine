@@ -8,8 +8,11 @@
 #include "typedefs/search.h"
 #include "typedefs/utils.h"
 #include <assert.h>
+#include <fcntl.h>
 #include <stdio.h>
 #include <string.h>
+#include <sys/errno.h>
+#include <unistd.h>
 
 // In opposition to the UCI protocol, Xboard is a stateful protocol which assumes that the
 // program keeps track of the chess game by drawing the game if stalemate, declaring victory
@@ -61,7 +64,7 @@ static int isGameOver(BOARD *pos)
         return true;
     }
 
-    if (isDrawByMaterial(pos) == true) {
+    if (isDrawByMaterial(pos)) {
         printf("1/2-1/2 {insufficient material (claimed by %s)}\n", ENGINE_NAME);
         return true;
     }
@@ -98,34 +101,40 @@ static void printOptions()
     printf("feature done=1\n");
 }
 
+static void logger(char *text)
+{
+    FILE *ptr = fopen("/Applications/XBoard.app/Contents/Resources/bin/okengine/logger.txt", "a");
+    if (ptr == NULL) EXIT_FAILURE;
+    fputs(text, ptr); /* logger */
+    fclose(ptr);
+}
+
 void XBoard_Loop(BOARD *pos, SEARCH_INFO *info)
 {
     info->GAME_MODE = XBOARDMODE;
-    info->POST_THINKING = true;
+    info->POST_THINKING = false;
+
+    // disabling buffering
     setbuf(stdin, NULL);
     setbuf(stdout, NULL);
-    printOptions(); // HACK
 
-    int depth = -1, movestogo[2] = {30, 30}, movetime = -1;
-    int time = -1, inc = 0;
-    int engineSide = BLACK;
-    int timeLeft;
-    int sec;
-    int mps;
-    int move = NOMOVE;
-    char inBuf[80], command[80];
-
+    printOptions();
     parseFen(START_FEN, pos);
 
-    while (true) {
+    POTENTIAL_MOVE_LIST list;
+    int depth = -1, movestogo[2] = {30, 30}, movetime = -1, time = -1, inc = 0, mps = 0;
+    int engineSide = BOTH;
+    char inBuf[80] = "", command[80] = "";
 
+    while (true) {
         fflush(stdout);
 
-        if (pos->side == engineSide && !isGameOver(pos)) {
+        if (isGameOver(pos)) break;
+        if (pos->side == engineSide) {
             info->starttime = getTimeMs();
             info->depth = depth;
 
-            if (time != -1) {
+            if (time != -1) { /* we didn't set time or set movestogo instead */
                 info->timeset = true;
                 time /= movestogo[pos->side];
                 time -= 50;
@@ -134,163 +143,154 @@ void XBoard_Loop(BOARD *pos, SEARCH_INFO *info)
 
             if (depth == -1 || depth > MAX_DEPTH) info->depth = MAX_DEPTH;
 
-            printf("time:%d start:%d stop:%d depth:%d timeset:%d movestogo:%d mps:%d\n",
-                   time, info->starttime, info->stoptime, info->depth, info->timeset, movestogo[pos->side], mps);
             searchPosition(pos, info);
+            int move = pos->pvArray[0];
+            makeMove(pos, move);
+            printf("move %s\n", printMove(move, pos));
 
-            if (mps != 0) {
+            if (mps) {
                 movestogo[pos->side ^ 1]--;
-                if (movestogo[pos->side ^ 1] < 1) {
-                    movestogo[pos->side ^ 1] = mps;
-                }
+                if (movestogo[pos->side ^ 1] < 1) movestogo[pos->side ^ 1] = mps;
             }
+
+            continue;
+        }
+        else if (engineSide != BOTH) {
+            // we can win some time and pre-generate the move list during the opponent's turn
+            generateAllMoves(pos, &list, false);
         }
 
+        memset(inBuf, '\0', sizeof(char) * 80);
+        memset(command, '\0', sizeof(char) * 80);
+
         fflush(stdout);
-
-        memset(&inBuf[0], 0, sizeof(inBuf));
-        if (!fgets(inBuf, 80, stdin)) continue;
-
+        if (fgets(inBuf, 80, stdin) == NULL) continue;
         sscanf(inBuf, "%s", command);
-
-        printf("command seen:%s\n", inBuf);
 
         if (!strcmp(command, "quit")) {
             info->quit = true;
             break;
         }
-
         if (!strcmp(command, "force")) {
             engineSide = BOTH;
             continue;
         }
-
         if (!strcmp(command, "protover")) {
             printOptions();
             continue;
         }
-
-        if (!strcmp(command, "sd")) {
+        if (!strcmp(command, "sd")) { /* set depth */
             sscanf(inBuf, "sd %d", &depth);
-            printf("DEBUG depth:%d\n", depth);
             continue;
         }
-
-        if (!strcmp(command, "st")) {
+        if (!strcmp(command, "st")) { /* set time per move */
             sscanf(inBuf, "st %d", &movetime);
-            printf("DEBUG movetime:%d\n", movetime);
             continue;
         }
-
-        if (!strcmp(command, "time")) {
+        if (!strcmp(command, "time")) { /* set total time */
             sscanf(inBuf, "time %d", &time);
-            time *= 10;
-            printf("DEBUG time:%d\n", time);
             continue;
         }
+        if (!strcmp(command, "level")) { /* setting movestogo. time & movetime to defaults */
+            int sec = 0, timeLeft = 0;
+            movetime = time = -1; /* defaults */
 
-        if (!strcmp(command, "level")) {
-            sec = 0;
-            movetime = -1;
-            if (sscanf(inBuf, "level %d %d %d", &mps, &timeLeft, &inc) != 3) {
+            if (sscanf(inBuf, "level %d %d %d", &mps, &timeLeft, &inc) != 3)
                 sscanf(inBuf, "level %d %d:%d %d", &mps, &timeLeft, &sec, &inc);
-                printf("DEBUG level with :\n");
-            }
-            else {
-                printf("DEBUG level without :\n");
-            }
+
             timeLeft *= 60000;
             timeLeft += sec * 1000;
-            movestogo[0] = movestogo[1] = 30;
-            if (mps != 0) {
-                movestogo[0] = movestogo[1] = mps;
-            }
-            time = -1;
-            printf("DEBUG level timeLeft:%d movesToGo:%d inc:%d mps%d\n", timeLeft, movestogo[0], inc, mps);
+            movestogo[0] = movestogo[1] = 30; /* defaults */
+            if (mps) movestogo[0] = movestogo[1] = mps;
+
+            printf("DEBUG level timeLeft:%d movesToGo:%d inc:%d\n", timeLeft, movestogo[0], inc);
             continue;
         }
-
         if (!strcmp(command, "ping")) {
             printf("pong%s\n", inBuf + 4);
             continue;
         }
-
         if (!strcmp(command, "new")) {
             engineSide = BLACK;
             parseFen(START_FEN, pos);
-            depth = -1;
-            time = -1;
+            depth = time = -1;
             continue;
         }
-
         if (!strcmp(command, "setboard")) {
             engineSide = BOTH;
             parseFen(inBuf + 9, pos);
             continue;
         }
-
         if (!strcmp(command, "go")) {
             engineSide = pos->side;
             continue;
         }
-
         if (!strcmp(command, "usermove")) {
-            movestogo[pos->side]--;
-            POTENTIAL_MOVE_LIST list;
-            generateAllMoves(pos, &list, false);
-            move = parseMove(inBuf + 9, pos, &list);
+            int move = parseMove(inBuf + 9, pos, &list);
+
             if (move == NOMOVE) continue;
             makeMove(pos, move);
+
             pos->ply = 0;
+            movestogo[pos->side]--;
         }
     }
 }
 
 void Console_Loop(BOARD *pos, SEARCH_INFO *info)
 {
-
     printf("Welcome to %s In Console Mode!\n", ENGINE_NAME);
     printf("Type help for commands\n\n");
 
     info->GAME_MODE = CONSOLEMODE;
-    info->POST_THINKING = true;
+    info->POST_THINKING = false;
+
+    // disabling buffering
     setbuf(stdin, NULL);
     setbuf(stdout, NULL);
 
+    POTENTIAL_MOVE_LIST list;
     int depth = MAX_DEPTH, movetime = 3000;
-    int engineSide = BOTH;
-    int move = NOMOVE;
+    int engineSide = BLACK;
     char inBuf[80], command[80];
 
-    engineSide = BLACK;
     parseFen(START_FEN, pos);
 
     while (true) {
-
         fflush(stdout);
 
-        if (pos->side == engineSide && !isGameOver(pos)) {
+        if (isGameOver(pos)) break;
+        if (pos->side == engineSide) {
             info->starttime = getTimeMs();
             info->depth = depth;
 
-            if (movetime != 0) {
+            if (movetime) {
                 info->timeset = true;
                 info->stoptime = info->starttime + movetime;
             }
 
             searchPosition(pos, info);
+            int move = pos->pvArray[0];
+            makeMove(pos, move);
+            printf("\n\n***!! %s makes move %s !!***\n\n", ENGINE_NAME, printMove(move, pos));
+            printBoard(pos);
+
+            continue;
+        }
+        else if (engineSide != BOTH) {
+            // we can win some time and pre-generate the move list during the opponent's turn
+            generateAllMoves(pos, &list, false);
         }
 
+        // REPL
         printf("\n%s > ", ENGINE_NAME);
-
         fflush(stdout);
+        memset(&inBuf, '\0', sizeof(inBuf));
 
-        memset(&inBuf[0], 0, sizeof(inBuf));
-        fflush(stdout);
         if (!fgets(inBuf, 80, stdin)) continue;
-
         sscanf(inBuf, "%s", command);
 
+        // COMMANDS
         if (!strcmp(command, "help")) {
             printf("Commands:\n");
             printf("quit - quit game\n");
@@ -308,75 +308,68 @@ void Console_Loop(BOARD *pos, SEARCH_INFO *info)
             printf("enter moves using b7b8q notation\n\n\n");
             continue;
         }
-
         if (!strcmp(command, "quit")) {
             info->quit = true;
             break;
         }
-
         if (!strcmp(command, "post")) {
             info->POST_THINKING = true;
             continue;
         }
-
-        if (!strcmp(command, "print")) {
-            printBoard(pos);
-            continue;
-        }
-
         if (!strcmp(command, "nopost")) {
             info->POST_THINKING = false;
             continue;
         }
-
+        if (!strcmp(command, "print")) {
+            printBoard(pos);
+            continue;
+        }
         if (!strcmp(command, "force")) {
             engineSide = BOTH;
             continue;
         }
-
         if (!strcmp(command, "view")) {
             depth == MAX_DEPTH
-                ? printf("depth not set ")
+                ? printf("depth not set\n")
                 : printf("depth %d", depth);
-
             movetime != 0
                 ? printf(" movetime %ds\n", movetime / 1000)
                 : printf(" movetime not set\n");
-
             continue;
         }
-
         if (!strcmp(command, "depth")) {
             sscanf(inBuf, "depth %d", &depth);
-            if (depth == 0) depth = MAX_DEPTH;
+            if (!depth) depth = MAX_DEPTH;
             continue;
         }
-
         if (!strcmp(command, "time")) {
             sscanf(inBuf, "time %d", &movetime);
             movetime *= 1000;
             continue;
         }
-
         if (!strcmp(command, "new")) {
             engineSide = BLACK;
             parseFen(START_FEN, pos);
             continue;
         }
-
         if (!strcmp(command, "go")) {
             engineSide = pos->side;
             continue;
         }
+        if (!strcmp(command, "usermove")) {
+            int move = parseMove(inBuf + 9, pos, &list);
 
-        POTENTIAL_MOVE_LIST list;
-        generateAllMoves(pos, &list, false);
-        move = parseMove(inBuf, pos, &list);
-        if (move == NOMOVE) {
-            printf("Command unknown:%s\n", inBuf);
+            if (move == NOMOVE) {
+                printf("Move is illegal\n");
+            }
+            else {
+                makeMove(pos, move);
+                pos->ply = 0;
+            }
+
             continue;
         }
-        makeMove(pos, move);
-        pos->ply = 0;
+
+        printf("Command unknown:%s\n", inBuf);
     }
 }

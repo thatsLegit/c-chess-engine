@@ -52,7 +52,10 @@ void parseGo(char *line, BOARD *pos, SEARCH_INFO *info)
 
     printf("time:%d start:%d stop:%d depth:%d timeset:%d\n",
            time, info->starttime, info->stoptime, info->depth, info->timeset);
+
     searchPosition(pos, info);
+    int move = pos->pvArray[0];
+    printf("bestmove %s\n", printMove(move, pos));
 }
 
 void parsePosition(char *lineIn, BOARD *pos)

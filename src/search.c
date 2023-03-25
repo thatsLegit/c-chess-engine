@@ -222,7 +222,6 @@ static int alphaBeta(int alpha, int beta, int depth, BOARD *pos, SEARCH_INFO *in
 // The core of the engine
 void searchPosition(BOARD *pos, SEARCH_INFO *info)
 {
-    int bestMove = NOMOVE;
     int bestScore = -INFINITY;
     int pvMoves = 0;
 
@@ -234,7 +233,6 @@ void searchPosition(BOARD *pos, SEARCH_INFO *info)
         // isn't alpha supposed to be +INFINITY if the playing side is black ?
         bestScore = alphaBeta(-INFINITY, INFINITY, depth, pos, info, true);
         pvMoves = updatePvLine(depth, pos);
-        bestMove = pos->pvArray[0];
 
         if (info->GAME_MODE == UCIMODE) {
             printf("info score cp %d depth %d nodes %ld time %d ",
@@ -256,18 +254,5 @@ void searchPosition(BOARD *pos, SEARCH_INFO *info)
             }
             putc('\n', stdout);
         }
-    }
-
-    if (info->GAME_MODE == UCIMODE) {
-        printf("bestmove %s\n", printMove(bestMove, pos));
-    }
-    else if (info->GAME_MODE == XBOARDMODE) {
-        printf("move %s\n", printMove(bestMove, pos));
-        makeMove(pos, bestMove);
-    }
-    else { /* Console mode */
-        printf("\n\n***!! %s makes move %s !!***\n\n", ENGINE_NAME, printMove(bestMove, pos));
-        makeMove(pos, bestMove);
-        printBoard(pos);
     }
 }
