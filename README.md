@@ -19,3 +19,4 @@ However, it is very useful in development and must be activated.
 todo:
 -optimize compilation
 -off debug mode
+-logger ?

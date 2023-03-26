@@ -21,6 +21,13 @@ int Sq64ToSq120[64];
 U64 setMask[64];
 U64 clearMask[64];
 
+U64 fileBBMask[8];
+U64 rankBBMask[8];
+
+U64 blackPassedMask[64];
+U64 whitePassedMask[64];
+U64 isolatedPawnMask[64];
+
 // Currently bitboards are only used for pawns
 void printBitBoard(U64 bb);
 void bitBoardExample();

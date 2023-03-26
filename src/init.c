@@ -34,23 +34,65 @@
    91   92   93   94   95   96   97   98
  */
 
-void initBitMasks()
+static void initBitMasks()
 {
     for (int i = 0; i < 64; i++) {
-        setMask[i] = 0ULL;
-        clearMask[i] = 0ULL;
-    }
-    for (int i = 0; i < 64; i++) {
-        setMask[i] = (1ULL << i);
+        setMask[i] = 1ULL << i;
         clearMask[i] = ~setMask[i];
     }
 }
-
-void initSquares()
+static void initRankMask()
 {
-    for (int i = 0; i < BRD_SQ_NUM; i++) {
-        Sq120ToSq64[i] = 64;
+    for (int rank = 0; rank < 8; rank++) {
+        for (int i = 0; i < 8; i++)
+            rankBBMask[rank] |= 1ULL << (rank * 8 + i);
     }
+}
+static void fileRankMask()
+{
+    for (int file = 7; file >= 0; file--) {
+        fileBBMask[file] = 1ULL << file;
+        for (int i = 1; i < 8; i++) {
+            fileBBMask[file] = fileBBMask[file] << 8;
+            fileBBMask[file] |= (1ULL << file);
+        }
+    }
+}
+static void initPassedPawnsMask()
+{
+    for (int i = 0; i < 64; i++) {
+        U64 fileMask = 0ULL;
+        int file = i % 8;
+        fileMask |= fileBBMask[file];
+        if (file != 0) fileMask |= fileBBMask[file - 1];
+        if (file != 7) fileMask |= fileBBMask[file + 1];
+
+        U64 rankMask = 0ULL;
+        int rank = 7 - i / 8;
+
+        for (int j = rank + 1; j < 8; j++)
+            rankMask |= rankBBMask[j];
+        blackPassedMask[i] = fileMask & rankMask;
+
+        rankMask = 0ULL;
+        for (int j = rank - 1; j >= 0; j--)
+            rankMask |= rankBBMask[j];
+        whitePassedMask[i] = fileMask & rankMask;
+    }
+}
+static void initIsolatedPawnsMask()
+{
+    for (int i = 0; i < 64; i++) {
+        int file = i % 8;
+        if (file != 0) isolatedPawnMask[i] |= fileBBMask[file - 1];
+        if (file != 7) isolatedPawnMask[i] |= fileBBMask[file + 1];
+    }
+}
+
+static void initSquares()
+{
+    for (int i = 0; i < BRD_SQ_NUM; i++)
+        Sq120ToSq64[i] = 64;
 
     int sq;
     int sq64 = 0;
@@ -63,6 +105,19 @@ void initSquares()
             sq64++;
         }
     }
+}
+
+static void initHashKeys()
+{
+    for (int i = 0; i < 13; i++) {
+        for (int j = 0; j < 120; j++)
+            pieceKeys[i][j] = RAND_64;
+    }
+
+    sideKey = RAND_64;
+
+    for (int i = 0; i < 16; i++)
+        castleKeys[i] = RAND_64;
 }
 
 void debugSquares()
@@ -83,25 +138,17 @@ void debugSquares()
     printf("\n");
 }
 
-void initHashKeys()
-{
-    for (int i = 0; i < 13; i++) {
-        for (int j = 0; j < 120; j++) {
-            pieceKeys[i][j] = RAND_64;
-        }
-    }
-
-    sideKey = RAND_64;
-
-    for (int i = 0; i < 16; i++) {
-        castleKeys[i] = RAND_64;
-    }
-}
-
 void allInit()
 {
     initSquares();
+
     initBitMasks();
+    fileRankMask();
+    initRankMask();
+    initPassedPawnsMask();
+    initIsolatedPawnsMask();
+
     initHashKeys();
+
     initMvvlvaScores();
 }
