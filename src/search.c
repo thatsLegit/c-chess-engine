@@ -153,6 +153,8 @@ static int alphaBeta(int alpha, int beta, int depth, BOARD *pos, SEARCH_INFO *in
     if ((isRepetition(pos) || pos->fiftyMove >= 100) && pos->ply) return 0; /* draw case */
     if (pos->ply > MAX_DEPTH) return evaluatePosition(pos);                 /* will probably never happen ? */
 
+    if (isInCheck(pos)) depth++; /* so that we can get out of check before looking at anything else */
+
     POTENTIAL_MOVE_LIST list;
     generateAllMoves(pos, &list, false);
 
@@ -210,8 +212,8 @@ static int alphaBeta(int alpha, int beta, int depth, BOARD *pos, SEARCH_INFO *in
     }
 
     if (!legal) {
-        if (isSquareAttacked(pos->kingSq[pos->side], pos->side ^ 1, pos)) return -MATE + pos->ply; /* MAT */
-        return 0;                                                                                  /* PAT */
+        if (isInCheck(pos)) return -MATE + pos->ply; /* MAT */
+        return 0;                                    /* PAT */
     }
 
     if (prevAlpha != alpha) storePvMove(pos, bestMove);

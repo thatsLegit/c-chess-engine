@@ -8,4 +8,6 @@
 // a black piece on square attacked by another black piece is not an attack on the piece.
 bool isSquareAttacked(int square, int side, BOARD *pos);
 
+bool isInCheck(BOARD *pos);
+
 #endif

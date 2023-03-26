@@ -67,3 +67,8 @@ bool isSquareAttacked(int square, int side, BOARD *pos)
 
     return false;
 }
+
+bool isInCheck(BOARD *pos)
+{
+    return isSquareAttacked(pos->kingSq[pos->side], pos->side ^ 1, pos);
+}
