@@ -188,5 +188,12 @@ void parseFen(char *fen, BOARD *pos);
 void printBoard(const BOARD* pos);
 void updateMaterialLists(BOARD* pos);
 int checkBoard(const BOARD* pos);
+// Translates the position played by pos->side to the opposite color.
+// The operation is completely reversible, i.e. can be undone.
+// Position evaluation is completely symetrical, which means that the side shouldn't
+// matter in the evaluation of the position for black or white.
+// Instead or re-coding the same evaluation function for black & white, we translation
+// the position to white when we evaluation for black.
+void mirrorBoard(BOARD *pos);
 
 #endif

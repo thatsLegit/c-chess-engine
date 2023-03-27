@@ -11,5 +11,6 @@
 
 int runPerfTesting(int depth, BOARD *pos);
 void largeScaleTesting(BOARD *pos);
+void mirrorEvaluationTest(BOARD *pos);
 
 #endif

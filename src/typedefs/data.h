@@ -23,4 +23,6 @@ bool isPieceKing[13];
 bool isPieceRookOrQueen[13];
 bool isPieceBishopOrQueen[13];
 
+int mirror64[64];
+
 #endif

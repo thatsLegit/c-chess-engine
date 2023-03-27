@@ -1,5 +1,6 @@
 #include "typedefs/perft.h"
 #include "typedefs/board.h"
+#include "typedefs/evaluate.h"
 #include "typedefs/io.h"
 #include "typedefs/misc.h"
 #include "typedefs/move.h"
@@ -10,6 +11,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 int runPerfTesting(int depth, BOARD *pos)
 {
@@ -74,7 +76,11 @@ static void processLine(BOARD *pos, char *line, char *fen, char **tests, int *to
 void largeScaleTesting(BOARD *pos)
 {
     int time = getTimeMs();
-    FILE *ptr = fopen("/Users/iljastepanov/dev/c/chess-engine/docs/perftsuite.epd", "r");
+    char *path = getCWD();
+    strcat(path, DOCS_PATH);
+    strcat(path, "/perftsuite.epd");
+
+    FILE *ptr = fopen(path, "r");
     if (ptr == NULL) printf("Error: %s\n", strerror(errno));
 
     int totalErrors = 0, totalLines = 0, lineSize = 0;
@@ -105,4 +111,42 @@ void largeScaleTesting(BOARD *pos)
     fclose(ptr);
     free(tests);
     printf("Test executed in %ds. Total number of errors: %d\n", (getTimeMs() - time) / 1000, totalErrors);
+}
+
+void mirrorEvaluationTest(BOARD *pos)
+{
+    char *path = getCWD();
+    strcat(path, DOCS_PATH);
+    strcat(path, "/mirror.epd");
+    char lineIn[1024];
+    int ev1 = 0, ev2 = 0, positions = 0;
+
+    FILE *file = fopen(path, "r");
+    if (file == NULL) {
+        printf("File Not Found\n");
+        return;
+    }
+
+    while (fgets(lineIn, 1024, file) != NULL) {
+        parseFen(lineIn, pos);
+        positions++;
+        ev1 = evaluatePosition(pos);
+        mirrorBoard(pos);
+        ev2 = evaluatePosition(pos);
+
+        if (ev1 != ev2) {
+            printf("\n\n\n");
+            parseFen(lineIn, pos);
+            printBoard(pos);
+            mirrorBoard(pos);
+            printBoard(pos);
+            printf("\n\nMirror Fail:\n%s\n", lineIn);
+            getchar();
+            return;
+        }
+
+        if ((positions % 1000) == 0) printf("position %d\n", positions);
+
+        memset(&lineIn, 0, sizeof(lineIn));
+    }
 }

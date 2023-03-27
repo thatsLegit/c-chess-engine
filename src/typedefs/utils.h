@@ -12,6 +12,9 @@ jmp_buf savebuff;
 // comment this in/out to toggle debug mode
 // #define DEBUG
 
+// Path to the docs folder from current directory
+#define DOCS_PATH "/docs"
+
 #define TRY if (setjmp(savebuff) == 0)
 #define CATCH else
 #define THROW longjmp(savebuff, 1);
@@ -38,5 +41,8 @@ jmp_buf savebuff;
         assert(n);                                          \
     }
 #endif
+
+void logger(char *text);
+char *getCWD();
 
 #endif

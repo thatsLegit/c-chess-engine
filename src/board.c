@@ -327,3 +327,36 @@ void printBoard(const BOARD *pos)
            pos->castlePerm & BQCA ? 'q' : '-');
     printf("posKey: %llX\n", pos->posKey);
 }
+
+void mirrorBoard(BOARD *pos)
+{
+    int t_piecesArr[64];
+    int t_side = pos->side ^ 1;
+    int swapPiece[13] = {EMPTY, bP, bN, bB, bR, bQ, bK, wP, wN, wB, wR, wQ, wK};
+    int t_castlePermissions = 0;
+    int t_enPassant = NO_SQ;
+
+    if (pos->castlePerm & WKCA) t_castlePermissions |= BKCA;
+    if (pos->castlePerm & WQCA) t_castlePermissions |= BQCA;
+    if (pos->castlePerm & BKCA) t_castlePermissions |= WKCA;
+    if (pos->castlePerm & BQCA) t_castlePermissions |= WQCA;
+
+    if (pos->enPas != NO_SQ) t_enPassant = SQ120(mirror64[SQ64(pos->enPas)]);
+
+    for (int i = 0; i < 64; i++)
+        t_piecesArr[i] = pos->pieces[SQ120(mirror64[i])];
+
+    resetBoard(pos);
+
+    for (int sq = 0; sq < 64; sq++)
+        pos->pieces[SQ120(sq)] = swapPiece[t_piecesArr[sq]];
+
+    pos->side = t_side;
+    pos->castlePerm = t_castlePermissions;
+    pos->enPas = t_enPassant;
+    pos->posKey = generatePosKey(pos);
+
+    updateMaterialLists(pos);
+
+    ASSERT(checkBoard(pos));
+}

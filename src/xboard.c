@@ -1,6 +1,7 @@
 #include "typedefs/xboard.h"
 #include "typedefs/attack.h"
 #include "typedefs/board.h"
+#include "typedefs/evaluate.h"
 #include "typedefs/io.h"
 #include "typedefs/misc.h"
 #include "typedefs/move.h"
@@ -8,11 +9,8 @@
 #include "typedefs/search.h"
 #include "typedefs/utils.h"
 #include <assert.h>
-#include <fcntl.h>
 #include <stdio.h>
 #include <string.h>
-#include <sys/errno.h>
-#include <unistd.h>
 
 // In opposition to the UCI protocol, Xboard is a stateful protocol which assumes that the
 // program keeps track of the chess game by drawing the game if stalemate, declaring victory
@@ -99,14 +97,6 @@ static void printOptions()
 {
     printf("feature ping=1 setboard=1 colors=0 usermove=1 memory=1\n");
     printf("feature done=1\n");
-}
-
-static void logger(char *text)
-{
-    FILE *ptr = fopen("/Applications/XBoard.app/Contents/Resources/bin/okengine/logger.txt", "a");
-    if (ptr == NULL) EXIT_FAILURE;
-    fputs(text, ptr); /* logger */
-    fclose(ptr);
 }
 
 void XBoard_Loop(BOARD *pos, SEARCH_INFO *info)
@@ -294,7 +284,6 @@ void Console_Loop(BOARD *pos, SEARCH_INFO *info)
         if (!strcmp(command, "help")) {
             printf("Commands:\n");
             printf("quit - quit game\n");
-            printf("force - computer will not think\n");
             printf("print - show board\n");
             printf("post - show thinking\n");
             printf("nopost - do not show thinking\n");
@@ -308,9 +297,22 @@ void Console_Loop(BOARD *pos, SEARCH_INFO *info)
             printf("enter moves using b7b8q notation\n\n\n");
             continue;
         }
+        if (!strcmp(command, "go")) {
+            engineSide = pos->side;
+            continue;
+        }
         if (!strcmp(command, "quit")) {
             info->quit = true;
             break;
+        }
+        if (!strcmp(command, "mirror")) {
+            printBoard(pos);
+            printf("Evaluation of the position: %d", evaluatePosition(pos));
+            mirrorBoard(pos);
+            printBoard(pos);
+            printf("Evaluation of the position: %d", evaluatePosition(pos));
+            mirrorBoard(pos);
+            continue;
         }
         if (!strcmp(command, "post")) {
             info->POST_THINKING = true;
@@ -324,10 +326,6 @@ void Console_Loop(BOARD *pos, SEARCH_INFO *info)
             printBoard(pos);
             continue;
         }
-        if (!strcmp(command, "force")) {
-            engineSide = BOTH;
-            continue;
-        }
         if (!strcmp(command, "view")) {
             depth == MAX_DEPTH
                 ? printf("depth not set\n")
@@ -335,6 +333,11 @@ void Console_Loop(BOARD *pos, SEARCH_INFO *info)
             movetime != 0
                 ? printf(" movetime %ds\n", movetime / 1000)
                 : printf(" movetime not set\n");
+            continue;
+        }
+        if (!strcmp(command, "new")) {
+            engineSide = BLACK;
+            parseFen(START_FEN, pos);
             continue;
         }
         if (!strcmp(command, "depth")) {
@@ -345,15 +348,6 @@ void Console_Loop(BOARD *pos, SEARCH_INFO *info)
         if (!strcmp(command, "time")) {
             sscanf(inBuf, "time %d", &movetime);
             movetime *= 1000;
-            continue;
-        }
-        if (!strcmp(command, "new")) {
-            engineSide = BLACK;
-            parseFen(START_FEN, pos);
-            continue;
-        }
-        if (!strcmp(command, "go")) {
-            engineSide = pos->side;
             continue;
         }
         if (!strcmp(command, "usermove")) {
