@@ -305,15 +305,6 @@ void Console_Loop(BOARD *pos, SEARCH_INFO *info)
             info->quit = true;
             break;
         }
-        if (!strcmp(command, "mirror")) {
-            printBoard(pos);
-            printf("Evaluation of the position: %d", evaluatePosition(pos));
-            mirrorBoard(pos);
-            printBoard(pos);
-            printf("Evaluation of the position: %d", evaluatePosition(pos));
-            mirrorBoard(pos);
-            continue;
-        }
         if (!strcmp(command, "post")) {
             info->POST_THINKING = true;
             continue;
@@ -340,6 +331,14 @@ void Console_Loop(BOARD *pos, SEARCH_INFO *info)
             parseFen(START_FEN, pos);
             continue;
         }
+        if (!strcmp(command, "eval")) {
+            printBoard(pos);
+            printf("evaluation of the position: %d", evaluatePosition(pos));
+            mirrorBoard(pos);
+            printBoard(pos);
+            printf("evaluation of the position: %d", evaluatePosition(pos));
+            continue;
+        }
         if (!strcmp(command, "depth")) {
             sscanf(inBuf, "depth %d", &depth);
             if (!depth) depth = MAX_DEPTH;
@@ -348,6 +347,11 @@ void Console_Loop(BOARD *pos, SEARCH_INFO *info)
         if (!strcmp(command, "time")) {
             sscanf(inBuf, "time %d", &movetime);
             movetime *= 1000;
+            continue;
+        }
+        if (!strcmp(command, "setboard")) {
+            engineSide = BOTH;
+            parseFen(inBuf + 9, pos);
             continue;
         }
         if (!strcmp(command, "usermove")) {

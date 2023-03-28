@@ -171,9 +171,17 @@ typedef struct BOARD {
 } BOARD;
 
 bool isSquareOffBoard(int square, BOARD *pos);
-// return value ranging from 0 to 7
+/**
+ * @param square int 0 - 120
+ * @param pos BOARD
+ * @return value ranging from 0 to 7
+ */
 int squareFile(int square, const BOARD *pos);
-// return value ranging from 0 to 7
+/**
+ * @param square int 0 - 120
+ * @param pos BOARD
+ * @return value ranging from 0 to 7
+ */
 int squareRank(int square, const BOARD *pos);
 void resetBoard(BOARD *pos);
 // Mutates the board according to the given fen notation
