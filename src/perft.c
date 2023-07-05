@@ -62,7 +62,7 @@ static void processLine(BOARD *pos, char *line, char *fen, char **tests, int *to
         int result = runPerfTesting(i + 1, pos);
 
         if (expectation != result) {
-            *totalErrors++;
+            *totalErrors = *totalErrors + 1;
             printf("\nExpected number of leaf nodes: %d, actual: %d\n", expectation, result);
         }
 
@@ -76,7 +76,7 @@ static void processLine(BOARD *pos, char *line, char *fen, char **tests, int *to
 void largeScaleTesting(BOARD *pos)
 {
     int time = getTimeMs();
-    char *path = getCWD();
+    char *path = getMyCWD();
     strcat(path, DOCS_PATH);
     strcat(path, "/perftsuite.epd");
 
@@ -115,7 +115,7 @@ void largeScaleTesting(BOARD *pos)
 
 void mirrorEvaluationTest(BOARD *pos)
 {
-    char *path = getCWD();
+    char *path = getMyCWD();
     strcat(path, DOCS_PATH);
     strcat(path, "/mirror.epd");
     char lineIn[1024];

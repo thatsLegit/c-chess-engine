@@ -204,8 +204,7 @@ int checkBoard(const BOARD *pos)
     // check pos->pieceList is coherent with pos->pieces
     for (t_piece = wP; t_piece <= bK; ++t_piece) {
         for (t_piece_num = 0; t_piece_num < pos->pieceNum[t_piece]; ++t_piece_num) {
-            int sq120 = pos->pieceList[t_piece][t_piece_num];
-            ASSERT(pos->pieces[sq120] == t_piece);
+            ASSERT(pos->pieces[pos->pieceList[t_piece][t_piece_num]] == t_piece);
         }
     }
 
@@ -226,6 +225,7 @@ int checkBoard(const BOARD *pos)
     for (t_piece = wP; t_piece <= bK; ++t_piece)
         ASSERT(t_pieceNum[t_piece] == pos->pieceNum[t_piece]);
 
+#ifdef DEBUG
     // check pawns count
     int pcount = COUNT(t_pawns[WHITE]);
     ASSERT(pcount == pos->pieceNum[wP]);
@@ -249,6 +249,7 @@ int checkBoard(const BOARD *pos)
         int sq64 = POP(&t_pawns[BOTH]);
         ASSERT((pos->pieces[SQ120(sq64)] == bP) || (pos->pieces[SQ120(sq64)] == wP));
     }
+#endif
 
     ASSERT(t_material[WHITE] == pos->material[WHITE] && t_material[BLACK] == pos->material[BLACK]);
     ASSERT(t_minPiece[WHITE] == pos->minorPieceNum[WHITE] && t_minPiece[BLACK] == pos->minorPieceNum[BLACK]);

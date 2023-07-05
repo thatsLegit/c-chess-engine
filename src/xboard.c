@@ -1,5 +1,6 @@
 #include "typedefs/xboard.h"
 #include "typedefs/attack.h"
+#include "typedefs/bitboards.h"
 #include "typedefs/board.h"
 #include "typedefs/evaluate.h"
 #include "typedefs/io.h"
@@ -93,7 +94,7 @@ static int isGameOver(BOARD *pos)
     return true;
 }
 
-static void printOptions()
+static void printOptions(void)
 {
     printf("feature ping=1 setboard=1 colors=0 usermove=1 memory=1\n");
     printf("feature done=1\n");
@@ -352,6 +353,7 @@ void Console_Loop(BOARD *pos, SEARCH_INFO *info)
         if (!strcmp(command, "setboard")) {
             engineSide = BOTH;
             parseFen(inBuf + 9, pos);
+            printf("black pawns: \n");
             continue;
         }
         if (!strcmp(command, "usermove")) {

@@ -43,6 +43,6 @@ jmp_buf savebuff;
 #endif
 
 void logger(char *text);
-char *getCWD();
+char *getMyCWD(void);
 
 #endif

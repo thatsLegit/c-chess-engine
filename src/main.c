@@ -9,7 +9,7 @@
 #include "typedefs/uci.h"
 #include "typedefs/xboard.h"
 
-int main()
+int main(void)
 {
     allInit();
 

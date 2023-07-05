@@ -5,7 +5,7 @@
 #include <string.h>
 #include <unistd.h>
 
-int getTimeMs()
+int getTimeMs(void)
 {
 #ifdef WIN32
     return GetTickCount();
@@ -17,7 +17,7 @@ int getTimeMs()
 }
 
 // http://home.arcor.de/dreamlike/chess/
-static int inputWaiting()
+static int inputWaiting(void)
 {
 #ifndef WIN32
     fd_set readfds;

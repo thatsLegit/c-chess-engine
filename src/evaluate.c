@@ -11,7 +11,7 @@
 // they advance further. Also develop the knights and try to centralize them.
 // the scores are computed as playing for black
 
-const int isolatedPawn = -25;
+const int isolatedPawn = -10;
 const int passedPawn[8] = { 0, 5, 10, 20, 35, 60, 100, 200 };
 const int rookOpenFile = 10;
 

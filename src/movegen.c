@@ -22,7 +22,7 @@ const int victimScores[13] = {0, 100, 200, 300, 400, 500, 600, 100, 200, 300, 40
 // [victim][attacker]
 static int mvvlvaScores[13][13];
 
-void initMvvlvaScores()
+void initMvvlvaScores(void)
 {
     for (int attacker = wP; attacker <= bK; attacker++) {
         for (int victim = wP; victim <= bK; victim++) {

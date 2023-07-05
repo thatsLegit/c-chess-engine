@@ -1,7 +1,7 @@
 CC=gcc
 
 # general set of flags
-FLAGS=-g -Wall
+FLAGS=-g -Wall -Werror -Wpedantic
 
 HEADERSDIR=typedefs
 

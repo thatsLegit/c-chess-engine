@@ -34,21 +34,21 @@
    91   92   93   94   95   96   97   98
  */
 
-static void initBitMasks()
+static void initBitMasks(void)
 {
     for (int i = 0; i < 64; i++) {
         setMask[i] = 1ULL << i;
         clearMask[i] = ~setMask[i];
     }
 }
-static void initRankMask()
+static void initRankMask(void)
 {
     for (int rank = 0; rank < 8; rank++) {
         for (int i = 0; i < 8; i++)
             rankBBMask[rank] |= 1ULL << (rank * 8 + i);
     }
 }
-static void fileRankMask()
+static void fileRankMask(void)
 {
     for (int file = 7; file >= 0; file--) {
         fileBBMask[file] = 1ULL << file;
@@ -58,7 +58,7 @@ static void fileRankMask()
         }
     }
 }
-static void initPassedPawnsMask()
+static void initPassedPawnsMask(void)
 {
     for (int i = 0; i < 64; i++) {
         U64 fileMask = 0ULL;
@@ -80,7 +80,7 @@ static void initPassedPawnsMask()
         whitePassedMask[i] = fileMask & rankMask;
     }
 }
-static void initIsolatedPawnsMask()
+static void initIsolatedPawnsMask(void)
 {
     for (int i = 0; i < 64; i++) {
         int file = i % 8;
@@ -89,7 +89,7 @@ static void initIsolatedPawnsMask()
     }
 }
 
-static void initSquares()
+static void initSquares(void)
 {
     for (int i = 0; i < BRD_SQ_NUM; i++)
         Sq120ToSq64[i] = 64;
@@ -107,7 +107,7 @@ static void initSquares()
     }
 }
 
-static void initHashKeys()
+static void initHashKeys(void)
 {
     for (int i = 0; i < 13; i++) {
         for (int j = 0; j < 120; j++)
@@ -120,7 +120,7 @@ static void initHashKeys()
         castleKeys[i] = RAND_64;
 }
 
-void debugSquares()
+void debugSquares(void)
 {
     for (int i = 0; i < BRD_SQ_NUM; i++) {
         if (i % 10 == 0) printf("\n");
@@ -138,7 +138,7 @@ void debugSquares()
     printf("\n");
 }
 
-void allInit()
+void allInit(void)
 {
     initSquares();
 

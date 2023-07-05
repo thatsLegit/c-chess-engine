@@ -4,7 +4,7 @@
 #include "board.h"
 #include <stdio.h>
 
-int getTimeMs();
+int getTimeMs(void);
 
 // Checks if there is any input in the stdin
 // We assume that if there is some input waiting, the GUI is telling us to stop.

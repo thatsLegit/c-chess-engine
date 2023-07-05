@@ -30,7 +30,7 @@ U64 isolatedPawnMask[64];
 
 // Currently bitboards are only used for pawns
 void printBitBoard(U64 bb);
-void bitBoardExample();
+void bitBoardExample(void);
 
 // a pointer is required as the passed-in bitboard will be mutated
 int popBit(U64 *bb);
