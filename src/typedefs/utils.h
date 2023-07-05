@@ -12,8 +12,8 @@ jmp_buf savebuff;
 // comment this in/out to toggle debug mode
 // #define DEBUG
 
-// Path to the docs folder from current directory
-#define DOCS_PATH "/docs"
+// Path to the assets folder from current directory
+#define ASSETS_PATH "/assets"
 
 #define TRY if (setjmp(savebuff) == 0)
 #define CATCH else

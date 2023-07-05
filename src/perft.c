@@ -73,11 +73,16 @@ static void processLine(BOARD *pos, char *line, char *fen, char **tests, int *to
     memset(fen, '\0', sizeof(char) * MAX_FEN_SIZE);
 }
 
+/**
+ * @brief Tests the ability of the program to read any position from a fen notation
+ * and generate the correct amount of legal moves WITHOUT playing them or testing
+ * any outcome.
+ */
 void largeScaleTesting(BOARD *pos)
 {
     int time = getTimeMs();
     char *path = getMyCWD();
-    strcat(path, DOCS_PATH);
+    strcat(path, ASSETS_PATH);
     strcat(path, "/perftsuite.epd");
 
     FILE *ptr = fopen(path, "r");
@@ -113,10 +118,16 @@ void largeScaleTesting(BOARD *pos)
     printf("Test executed in %ds. Total number of errors: %d\n", (getTimeMs() - time) / 1000, totalErrors);
 }
 
+/**
+ * @brief Tests the ability of the program to transpose position symetrical from black to white
+ * and white to black. This is useful as evaluatePosition function is using tables to evaluate the position of
+ * each piece for white pieces and to be able to do the same for black, we transpose the position to white side
+ * and switch it back to black after the evaluation.
+ */
 void mirrorEvaluationTest(BOARD *pos)
 {
     char *path = getMyCWD();
-    strcat(path, DOCS_PATH);
+    strcat(path, ASSETS_PATH);
     strcat(path, "/mirror.epd");
     char lineIn[1024];
     int ev1 = 0, ev2 = 0, positions = 0;
