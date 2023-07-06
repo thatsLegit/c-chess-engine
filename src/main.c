@@ -43,7 +43,7 @@ int main(void)
             if (info.quit) break;
             continue;
         }
-        else if (!strncmp(line, "quit", 4)) {
+        else if (!strncmp(line, "quit", 4) || !strncmp(line, "exit", 4)) {
             break;
         }
     }

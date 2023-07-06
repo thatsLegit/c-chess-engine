@@ -299,6 +299,10 @@ void resetBoard(BOARD *pos)
 
 void printBoard(const BOARD *pos)
 {
+    int lastMovePlayed = pos->pvArray[0];
+    int from = FROM_SQ(lastMovePlayed);
+    int to = TO_SQ(lastMovePlayed);
+
     printf("\nGAME BOARD:\n\n");
 
     if (pos->side == WHITE) {
@@ -308,7 +312,11 @@ void printBoard(const BOARD *pos)
             for (int file = FILE_A; file <= FILE_H; file++) {
                 int sq = FR2SQ(file, rank);
                 int piece = pos->pieces[sq];
-                printf("%3c", pieceChar[piece]);
+
+                if (sq == from || sq == to)
+                    printf("\033[1;33m%3c\033[0m", pieceChar[piece]);
+                else
+                    printf("%3c", pieceChar[piece]);
             }
 
             printf("\n");
@@ -326,7 +334,11 @@ void printBoard(const BOARD *pos)
             for (int file = FILE_H; file >= FILE_A; file--) {
                 int sq = FR2SQ(file, rank);
                 int piece = pos->pieces[sq];
-                printf("%3c", pieceChar[piece]);
+
+                if (sq == from || sq == to)
+                    printf("\033[1;33m%3c\033[0m", pieceChar[piece]);
+                else
+                    printf("%3c", pieceChar[piece]);
             }
 
             printf("\n");
