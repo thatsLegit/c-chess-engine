@@ -45,10 +45,10 @@ static void initRankMask(void)
 {
     for (int rank = 0; rank < 8; rank++) {
         for (int i = 0; i < 8; i++)
-            rankBBMask[rank] |= 1ULL << (rank * 8 + i);
+            rankBBMask[7 - rank] |= 1ULL << (rank * 8 + i);
     }
 }
-static void fileRankMask(void)
+static void initFileMask(void)
 {
     for (int file = 7; file >= 0; file--) {
         fileBBMask[file] = 1ULL << file;
@@ -63,6 +63,7 @@ static void initPassedPawnsMask(void)
     for (int i = 0; i < 64; i++) {
         U64 fileMask = 0ULL;
         int file = i % 8;
+
         fileMask |= fileBBMask[file];
         if (file != 0) fileMask |= fileBBMask[file - 1];
         if (file != 7) fileMask |= fileBBMask[file + 1];
@@ -70,12 +71,12 @@ static void initPassedPawnsMask(void)
         U64 rankMask = 0ULL;
         int rank = 7 - i / 8;
 
-        for (int j = rank + 1; j < 8; j++)
+        for (int j = 0; j <= rank; j++)
             rankMask |= rankBBMask[j];
         blackPassedMask[i] = fileMask & rankMask;
 
         rankMask = 0ULL;
-        for (int j = rank - 1; j >= 0; j--)
+        for (int j = 7; j > rank; j--)
             rankMask |= rankBBMask[j];
         whitePassedMask[i] = fileMask & rankMask;
     }
@@ -143,7 +144,7 @@ void allInit(void)
     initSquares();
 
     initBitMasks();
-    fileRankMask();
+    initFileMask();
     initRankMask();
     initPassedPawnsMask();
     initIsolatedPawnsMask();

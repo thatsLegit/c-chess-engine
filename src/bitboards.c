@@ -47,7 +47,6 @@ void printBitBoard(U64 bb)
         for (int file = FILE_A; file < FILE_NONE; file++) {
             int sq120 = FR2SQ(file, rank);
             int sq64 = SQ64(sq120);
-            printf("sq64 in bitboards: %d\n", sq64);
 
             if ((shiftMe << sq64) & bb)
                 printf("%3c", 'X');

@@ -332,14 +332,6 @@ void Console_Loop(BOARD *pos, SEARCH_INFO *info)
             parseFen(START_FEN, pos);
             continue;
         }
-        if (!strcmp(command, "eval")) {
-            printBoard(pos);
-            printf("evaluation of the position: %d", evaluatePosition(pos));
-            mirrorBoard(pos);
-            printBoard(pos);
-            printf("evaluation of the position: %d", evaluatePosition(pos));
-            continue;
-        }
         if (!strcmp(command, "depth")) {
             sscanf(inBuf, "depth %d", &depth);
             if (!depth) depth = MAX_DEPTH;
@@ -353,23 +345,16 @@ void Console_Loop(BOARD *pos, SEARCH_INFO *info)
         if (!strcmp(command, "setboard")) {
             engineSide = BOTH;
             parseFen(inBuf + 9, pos);
-            printf("black pawns: \n");
-            continue;
-        }
-        if (!strcmp(command, "usermove")) {
-            int move = parseMove(inBuf + 9, pos, &list);
-
-            if (move == NOMOVE) {
-                printf("Move is illegal\n");
-            }
-            else {
-                makeMove(pos, move);
-                pos->ply = 0;
-            }
-
             continue;
         }
 
-        printf("Command unknown:%s\n", inBuf);
+        int move = parseMove(inBuf, pos, &list);
+
+        if (move == NOMOVE)
+            printf("Move is illegal\n");
+        else {
+            makeMove(pos, move);
+            pos->ply = 0;
+        }
     }
 }
