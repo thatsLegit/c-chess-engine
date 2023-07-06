@@ -301,22 +301,42 @@ void printBoard(const BOARD *pos)
 {
     printf("\nGAME BOARD:\n\n");
 
-    for (int rank = RANK_8; rank >= RANK_1; rank--) {
-        printf("%d ", rank + 1);
+    if (pos->side == WHITE) {
+        for (int rank = RANK_8; rank >= RANK_1; rank--) {
+            printf("%d ", rank + 1);
 
-        for (int file = FILE_A; file <= FILE_H; file++) {
-            int sq = FR2SQ(file, rank);
-            int piece = pos->pieces[sq];
-            printf("%3c", pieceChar[piece]);
+            for (int file = FILE_A; file <= FILE_H; file++) {
+                int sq = FR2SQ(file, rank);
+                int piece = pos->pieces[sq];
+                printf("%3c", pieceChar[piece]);
+            }
+
+            printf("\n");
         }
 
-        printf("\n");
+        printf("\n  ");
+
+        for (int file = FILE_A; file <= FILE_H; file++)
+            printf("%3c", file + 'a');
     }
+    if (pos->side == BLACK) {
+        for (int rank = RANK_1; rank < RANK_NONE; rank++) {
+            printf("%d ", rank + 1);
 
-    printf("\n  ");
+            for (int file = FILE_H; file >= FILE_A; file--) {
+                int sq = FR2SQ(file, rank);
+                int piece = pos->pieces[sq];
+                printf("%3c", pieceChar[piece]);
+            }
 
-    for (int file = FILE_A; file <= FILE_H; file++)
-        printf("%3c", file + 'a');
+            printf("\n");
+        }
+
+        printf("\n  ");
+
+        for (int file = FILE_H; file >= FILE_A; file--)
+            printf("%3c", file + 'a');
+    }
 
     printf("\n\n");
     printf("side: %c\n", sideChar[pos->side]);
